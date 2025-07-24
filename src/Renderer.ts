@@ -1,0 +1,134 @@
+import { Board, BOARD_WIDTH, BOARD_HEIGHT, Cell } from './Board';
+import { Shape } from './Shape';
+import { SCALE_FACTOR } from './config';
+
+export class Renderer {
+  private canvas: HTMLCanvasElement;
+  private context: CanvasRenderingContext2D;
+  private nextShapeCanvas: HTMLCanvasElement;
+  private nextShapeContext: CanvasRenderingContext2D;
+  private cellSize: number; // 每个沙粒的像素尺寸
+
+  constructor(canvasId: string, nextShapeCanvasId: string) {
+    this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+    this.context = this.canvas.getContext('2d')!;
+
+    this.nextShapeCanvas = document.getElementById(
+      nextShapeCanvasId
+    ) as HTMLCanvasElement;
+    this.nextShapeContext = this.nextShapeCanvas.getContext('2d')!;
+
+    // 动态计算每个沙粒的尺寸，以适应画布大小
+    this.cellSize = this.canvas.width / BOARD_WIDTH;
+  }
+
+  public render(
+    board: Board,
+    currentShape: Shape | null,
+    nextShape: Shape | null,
+    gameOver: boolean
+  ): void {
+    this.clear();
+    this.drawBoard(board);
+    if (currentShape) {
+      this.drawShape(currentShape, this.context);
+    }
+    if (nextShape) {
+      this.drawNextShape(nextShape);
+    }
+    if (gameOver) {
+      this.drawGameOver();
+    }
+  }
+
+  private clear(): void {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.nextShapeContext.clearRect(
+      0,
+      0,
+      this.nextShapeCanvas.width,
+      this.nextShapeCanvas.height
+    );
+  }
+
+  private drawBoard(board: Board): void {
+    const grid = board.getGrid();
+    for (let y = 0; y < BOARD_HEIGHT; y++) {
+      for (let x = 0; x < BOARD_WIDTH; x++) {
+        if (grid[y][x] !== '') {
+          this.drawCell(x, y, grid[y][x], this.context, this.cellSize);
+        }
+      }
+    }
+  }
+
+  private drawShape(shape: Shape, context: CanvasRenderingContext2D): void {
+    const { x, y, matrix, color } = shape;
+    for (let row = 0; row < matrix.length; row++) {
+      for (let col = 0; col < matrix[row].length; col++) {
+        if (matrix[row][col]) {
+          this.drawCell(x + col, y + row, color, context, this.cellSize);
+        }
+      }
+    }
+  }
+
+  private drawNextShape(shape: Shape): void {
+    const { matrix, color } = shape;
+    // 假设 "Next" 画布最多显示 4x4 的基础方块, 放大后就是 4 * SCALE_FACTOR
+    const nextCellSize = this.nextShapeCanvas.width / (4 * SCALE_FACTOR);
+
+    const shapeWidth = matrix[0].length;
+    const shapeHeight = matrix.length;
+    const offsetX = (this.nextShapeCanvas.width - shapeWidth * nextCellSize) / 2;
+    const offsetY = (this.nextShapeCanvas.height - shapeHeight * nextCellSize) / 2;
+
+    for (let row = 0; row < matrix.length; row++) {
+      for (let col = 0; col < matrix[row].length; col++) {
+        if (matrix[row][col]) {
+          this.drawCell(
+            offsetX / nextCellSize + col,
+            offsetY / nextCellSize + row,
+            color,
+            this.nextShapeContext,
+            nextCellSize
+          );
+        }
+      }
+    }
+  }
+
+  private drawCell(
+    x: number,
+    y: number,
+    color: string,
+    context: CanvasRenderingContext2D,
+    cellSize: number
+  ): void {
+    context.fillStyle = color;
+    context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+    // 当沙粒太小时，不绘制边框，以提高性能和视觉效果
+    if (cellSize > 2) {
+      context.strokeStyle = '#222';
+      context.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+    }
+  }
+
+  private drawGameOver(): void {
+    this.context.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    this.context.fillRect(
+      0,
+      this.canvas.height / 2 - 50,
+      this.canvas.width,
+      100
+    );
+    this.context.fillStyle = 'white';
+    this.context.font = '48px sans-serif';
+    this.context.textAlign = 'center';
+    this.context.fillText(
+      'Game Over',
+      this.canvas.width / 2,
+      this.canvas.height / 2 + 15
+    );
+  }
+}

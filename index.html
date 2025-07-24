@@ -1,10 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
+    <meta charset="UTF-8" />
     <title>Gemini Sand Tetris</title>
-</head>
-<body>
-    <canvas id="gameCanvas"></canvas>
-    <script src="dist/main.js"></script>
-</body>
+  </head>
+  <body>
+    <!-- 游戏总容器 -->
+    <div style="text-align: center">
+      <!-- 1. 标题独立出来，位于最顶部 -->
+      <h1>Gemini Sand Tetris</h1>
+
+      <!-- 2. 一个新的 Flex 容器，专门用于对齐主游戏区和侧边栏 -->
+      <div style="display: flex; align-items: flex-start; gap: 20px">
+        <!-- 第一列：只包含主游戏画布 -->
+        <div>
+          <canvas id="game-canvas" width="320" height="640"></canvas>
+        </div>
+
+        <!-- 第二列：包含 Next 图形和调试菜单 -->
+        <div>
+          <canvas id="next-shape-canvas" width="128" height="128"></canvas>
+          <div id="debug-menu">
+            <h3>调试菜单</h3>
+            <button id="reset-button">重置游戏</button>
+            <h4>指定下一个图形</h4>
+            <div id="shape-selector"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+    <style>
+      body {
+        background-color: #222;
+        color: #eee;
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin: 10px 0;
+      }
+      canvas {
+        border: 1px solid #eee;
+        background-color: #000;
+      }
+      #debug-menu {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px dashed #555;
+        text-align: center;
+      }
+      #shape-selector button {
+        margin: 2px;
+        padding: 5px 10px;
+        font-family: monospace;
+      }
+    </style>
+  </body>
 </html>
