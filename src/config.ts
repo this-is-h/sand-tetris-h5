@@ -16,9 +16,15 @@ export const BASE_BOARD_HEIGHT = 20;
 /**
  * 方块正常自动下落的时间间隔（单位：毫秒）
  */
-export const NORMAL_DROP_INTERVAL = 100;
+export const NORMAL_DROP_INTERVAL = 50;
 
 /**
  * 玩家按住"向下"键时，方块的快速下落时间间隔（单位：毫秒）
  */
-export const SOFT_DROP_INTERVAL = 10;
+export const SOFT_DROP_INTERVAL = 1;
+
+/**
+ * 沙粒物理演算的时间间隔（单位：毫秒）
+ * 这个值越小，沙粒下落和滑动看起来就越流畅、越快
+ */
+export const SAND_SETTLE_INTERVAL = 5;

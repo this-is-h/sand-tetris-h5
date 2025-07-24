@@ -7,6 +7,7 @@ export class DebugMenu {
   constructor(game: Game) {
     this.game = game;
     this.setupResetButton();
+    this.setupClearBoardButton();
     this.setupShapeSelector();
   }
 
@@ -15,6 +16,24 @@ export class DebugMenu {
     if (resetButton) {
       resetButton.addEventListener('click', () => {
         this.game.reset();
+      });
+    }
+  }
+
+  private setupClearBoardButton(): void {
+    const clearButton = document.getElementById('clear-board-button');
+    if (clearButton) {
+      clearButton.addEventListener('click', () => {
+        this.game.clearBoard();
+      });
+    }
+  }
+
+  private setupHardDropButton(): void {
+    const hardDropButton = document.getElementById('hard-drop-button');
+    if (hardDropButton) {
+      hardDropButton.addEventListener('click', () => {
+        this.game.hardDrop();
       });
     }
   }

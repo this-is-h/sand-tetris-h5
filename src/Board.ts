@@ -38,9 +38,11 @@ export class Board {
 
   /**
    * 核心消除逻辑："流沙"消除
+   * @returns 如果成功消除了至少一个团块，则返回 true，否则返回 false
    */
-  public clearSand(): void {
+  public clearSand(): boolean {
     const visited = new Set<string>(); // 用于记录在本次消除中已经访问过的所有格子
+    let clearedAny = false;
 
     for (let y = 0; y < BOARD_HEIGHT; y++) {
       for (let x = 0; x < BOARD_WIDTH; x++) {
@@ -58,10 +60,12 @@ export class Board {
             for (const { x, y } of group.cells) {
               this.setCell(x, y, '');
             }
+            clearedAny = true;
           }
         }
       }
     }
+    return clearedAny;
   }
 
   /**
@@ -124,25 +128,58 @@ export class Board {
   }
 
   /**
-   * 更新沙粒的物理状态，让其下落
+   * 对整个沙盘进行一轮物理计算，让所有可移动的沙粒移动一格
+   * @returns 如果在这一轮计算中，有至少一个沙粒移动了，则返回 true，否则返回 false
    */
-  public updateSand(): void {
-    let falling = true;
-    while (falling) {
-      falling = false;
-      // 从下到上遍历，确保沙粒能连续下落
-      for (let y = BOARD_HEIGHT - 2; y >= 0; y--) {
-        for (let x = 0; x < BOARD_WIDTH; x++) {
-          const cell = this.getCell(x, y);
-          const belowCell = this.getCell(x, y + 1);
+  public updateSandStep(): boolean {
+    let hasFallen = false;
+    // 坚持“自底向上，自左向右”的扫描顺序
+    for (let y = BOARD_HEIGHT - 2; y >= 0; y--) {
+      for (let x = 0; x < BOARD_WIDTH; x++) {
+        const cell = this.getCell(x, y);
+        if (!cell) {
+          continue; // 当前格子是空的，跳过
+        }
 
-          if (cell && !belowCell) {
-            this.setCell(x, y + 1, cell);
-            this.setCell(x, y, '');
-            falling = true;
-          }
+        // --- 开始为这颗沙粒做决策 ---
+
+        // 决策 1：垂直下落 (最高优先级)
+        if (!this.getCell(x, y + 1)) {
+          this.setCell(x, y + 1, cell);
+          this.setCell(x, y, '');
+          hasFallen = true;
+          continue; // 完成移动，处理下一个沙粒
+        }
+
+        // 决策 2 & 3：斜向滑动
+        // 根据您精确定义的规则，检查左右两个方向的可行性
+        const canGoLeft = this.isValidPosition(x - 1, y + 1) && !this.getCell(x - 1, y + 1);
+        const canGoRight =
+          this.isValidPosition(x + 1, y + 1) &&
+          !this.getCell(x + 1, y + 1) && // 右下方是空的
+          !this.getCell(x + 1, y);      // 且正右方也是空的
+
+        // 情况 B：如果左右两边都能滑动，随机选择一个方向
+        if (canGoLeft && canGoRight) {
+          const direction = Math.random() < 0.5 ? -1 : 1; // -1 代表向左, 1 代表向右
+          this.setCell(x + direction, y + 1, cell);
+          this.setCell(x, y, '');
+          hasFallen = true;
+        }
+        // 情况 A：如果只能向左滑动
+        else if (canGoLeft) {
+          this.setCell(x - 1, y + 1, cell);
+          this.setCell(x, y, '');
+          hasFallen = true;
+        }
+        // 情况 A：如果只能向右滑动
+        else if (canGoRight) {
+          this.setCell(x + 1, y + 1, cell);
+          this.setCell(x, y, '');
+          hasFallen = true;
         }
       }
     }
+    return hasFallen;
   }
 }
