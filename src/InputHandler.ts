@@ -2,6 +2,7 @@ import { Game } from './core/Game';
 
 export class InputHandler {
   private game: Game;
+  private lastRotateTime: number = 0;
 
   constructor(game: Game) {
     this.game = game;
@@ -23,7 +24,11 @@ export class InputHandler {
         this.game.startSoftDrop();
         break;
       case 'ArrowUp':
-        this.game.rotateShape();
+        const currentTime = Date.now();
+        if (currentTime - this.lastRotateTime >= 300) { // 防止长按连续旋转
+          this.game.rotateShape();
+          this.lastRotateTime = currentTime;
+        }
         break;
     }
   }
