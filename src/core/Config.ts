@@ -8,8 +8,8 @@ export const SCALE_FACTOR = 7;
 /**
  * 基础的游戏区域尺寸（以正常俄罗斯方块的格子为单位）
  */
-const BASE_BOARD_WIDTH = 10;
-const BASE_BOARD_HEIGHT = 20;
+const BASE_BOARD_WIDTH = 12;
+const BASE_BOARD_HEIGHT = 18;
 
 /**
  * 游戏区域的宽度和高度

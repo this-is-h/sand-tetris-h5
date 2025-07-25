@@ -1,4 +1,4 @@
-import { Board, Cell } from './core/Board';
+import { Board } from './core/Board';
 import { Shape } from './core/Shape';
 import { BOARD_WIDTH, BOARD_HEIGHT, SCALE_FACTOR } from './core/Config';
 
@@ -81,7 +81,8 @@ export class Renderer {
     if (!shape) return;
 
     const { matrix, color } = shape;
-    const nextCellSize = this.nextShapeCanvas.width / (4 * SCALE_FACTOR);
+    const maxCellSize = 4; // 最大就是4格（I形）
+    const nextCellSize = this.nextShapeCanvas.width / (maxCellSize * SCALE_FACTOR) / 1.5; // 1.5倍缩小
 
     const shapeWidth = matrix[0].length;
     const shapeHeight = matrix.length;
