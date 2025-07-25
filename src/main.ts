@@ -7,33 +7,33 @@ let game: Game;
 let renderer: Renderer;
 
 document.addEventListener('DOMContentLoaded', () => {
-  game = new Game();
-  renderer = new Renderer('game-canvas', 'next-shape-canvas', 'score-value');
-  new InputHandler(game);
-  new DebugMenu(game);
+    game = new Game();
+    renderer = new Renderer('game-canvas', 'next-shape-canvas', 'score-value');
+    new InputHandler(game);
+    new DebugMenu(game);
 
-  let lastTime = 0;
+    let lastTime = 0;
 
-  function gameLoop(timestamp: number) {
-    const deltaTime = timestamp - lastTime;
-    lastTime = timestamp;
+    function gameLoop(timestamp: number) {
+        const deltaTime = timestamp - lastTime;
+        lastTime = timestamp;
 
-    // 1. 更新游戏世界的所有状态
-    game.update(deltaTime, timestamp);
+        // 1. 更新游戏世界的所有状态
+        game.update(deltaTime, timestamp);
 
-    // 2. 根据游戏世界的当前状态，渲染画面
-    renderer.render(
-      game,
-      game.currentShape,
-      game.getNextShape(),
-      game.gameOver,
-      game.score,
-      timestamp
-    );
+        // 2. 根据游戏世界的当前状态，渲染画面
+        renderer.render(
+            game,
+            game.currentShape,
+            game.getNextShape(),
+            game.gameOver,
+            game.score,
+            timestamp
+        );
 
+        requestAnimationFrame(gameLoop);
+    }
+
+    // 启动游戏循环
     requestAnimationFrame(gameLoop);
-  }
-
-  // 启动游戏循环
-  requestAnimationFrame(gameLoop);
 });

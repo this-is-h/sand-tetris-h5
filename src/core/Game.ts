@@ -61,7 +61,8 @@ export class Game {
         this.score = 0; // 初始化分数
 
         const shapeTypes = Object.keys(SHAPES) as ShapeType[];
-        const firstType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        const firstType =
+            shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         this.nextShape = new Shape(firstType);
         this.spawnShape();
     }
@@ -95,7 +96,8 @@ export class Game {
         }
 
         const shapeTypes = Object.keys(SHAPES) as ShapeType[];
-        const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        const randomType =
+            shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         this.nextShape = new Shape(randomType);
     }
 
@@ -143,7 +145,9 @@ export class Game {
             if (clearedCells.length > 0) {
                 this.score += clearedCells.length; // 累加分数
                 for (const cell of clearedCells) {
-                    this.activeClearEffects.push(new ClearEffect(cell.x, cell.y, cell.color));
+                    this.activeClearEffects.push(
+                        new ClearEffect(cell.x, cell.y, cell.color)
+                    );
                 }
                 // 什么也不做，让下一次的 update() 循环自动地、再次地进入 settleSand 流程，
                 // 从而让上方的沙粒落入新的空隙中，形成“连击”效果。
@@ -151,7 +155,7 @@ export class Game {
                 // 5. 如果既没有任何沙粒移动，也没有发生任何消除，
                 //    说明沙盘已经达到了“最终稳定”状态。
                 this.isSettling = false; // 结束结算模式
-                this.spawnShape();     // 生成下一个方块
+                this.spawnShape(); // 生成下一个方块
             }
         }
     }
@@ -213,7 +217,8 @@ export class Game {
                         boardX < 0 ||
                         boardX >= BOARD_WIDTH ||
                         boardY >= this.board.getGrid().length ||
-                        (boardY >= 0 && this.board.getCell(boardX, boardY) !== '')
+                        (boardY >= 0 &&
+                            this.board.getCell(boardX, boardY) !== '')
                     ) {
                         return true;
                     }
@@ -246,6 +251,8 @@ export class Game {
     }
 
     private updateClearEffects(currentTime: number): void {
-        this.activeClearEffects = this.activeClearEffects.filter(effect => effect.update(currentTime));
+        this.activeClearEffects = this.activeClearEffects.filter((effect) =>
+            effect.update(currentTime)
+        );
     }
 }

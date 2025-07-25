@@ -59,11 +59,13 @@ export class Board {
 
                 // 决策 2 & 3：斜向滑动
                 // 根据您精确定义的规则，检查左右两个方向的可行性
-                const canGoLeft = this.isValidPosition(x - 1, y + 1) && !this.getCell(x - 1, y + 1);
+                const canGoLeft =
+                    this.isValidPosition(x - 1, y + 1) &&
+                    !this.getCell(x - 1, y + 1);
                 const canGoRight =
                     this.isValidPosition(x + 1, y + 1) &&
                     !this.getCell(x + 1, y + 1) && // 右下方是空的
-                    !this.getCell(x + 1, y);      // 且正右方也是空的
+                    !this.getCell(x + 1, y); // 且正右方也是空的
 
                 // 情况 B：如果左右两边都能滑动，随机选择一个方向
                 if (canGoLeft && canGoRight) {
@@ -105,23 +107,37 @@ export class Board {
                 // 如果这个格子有颜色，并且我们还没有检查过它
                 if (cellColor && !visited.has(key)) {
                     // 就从这个格子开始，寻找所有和它相连的、同色的格子组成的团块
-                    const group = this.findConnectedGroup(x, y, cellColor, visited);
+                    const group = this.findConnectedGroup(
+                        x,
+                        y,
+                        cellColor,
+                        visited
+                    );
 
                     // 如果这个团块同时接触到了左右两边的墙壁
                     if (group.touchesLeftWall && group.touchesRightWall) {
                         // 确定遍历方向
                         // 可消除方块集合的遍历顺序：1.自底向上 2.如果最低的方块在左侧则从左到右遍历，如果最低的方块在右侧则从右往左遍历
-                        const isLeftmostLower = group.cells.some(cell => cell.x === 0 && cell.y === Math.max(...group.cells.map(c => c.y)));
+                        const isLeftmostLower = group.cells.some(
+                            (cell) =>
+                                cell.x === 0 &&
+                                cell.y ===
+                                    Math.max(...group.cells.map((c) => c.y))
+                        );
                         //const isRightmostLower = group.cells.some(cell => cell.x === BOARD_WIDTH - 1 && cell.y === Math.max(...group.cells.map(c => c.y)));
 
                         let sortedCells = [...group.cells];
 
                         if (isLeftmostLower) {
                             // 从左到右，自底向上
-                            sortedCells.sort((a, b) => a.y === b.y ? a.x - b.x : b.y - a.y);
+                            sortedCells.sort((a, b) =>
+                                a.y === b.y ? a.x - b.x : b.y - a.y
+                            );
                         } else {
                             // 从右到左，自底向上
-                            sortedCells.sort((a, b) => a.y === b.y ? b.x - a.x : b.y - a.y);
+                            sortedCells.sort((a, b) =>
+                                a.y === b.y ? b.x - a.x : b.y - a.y
+                            );
                         }
 
                         for (const { x, y } of sortedCells) {
@@ -144,12 +160,12 @@ export class Board {
         visited: Set<string>
     ) {
         const group = {
-            cells: [] as { x: number; y: number; }[],
+            cells: [] as { x: number; y: number }[],
             touchesLeftWall: false,
             touchesRightWall: false,
         };
 
-        const queue: { x: number; y: number; }[] = [{ x: startX, y: startY }];
+        const queue: { x: number; y: number }[] = [{ x: startX, y: startY }];
         visited.add(`${startX},${startY}`); // 标记起始格子已被访问
 
         while (queue.length > 0) {
