@@ -1,6 +1,7 @@
 import { Board } from './core/Board';
+import { BOARD_HEIGHT, BOARD_WIDTH, SCALE_FACTOR } from './core/Config';
+import { Game } from './core/Game';
 import { Shape } from './core/Shape';
-import { BOARD_WIDTH, BOARD_HEIGHT, SCALE_FACTOR } from './core/Config';
 
 export class Renderer {
   private canvas: HTMLCanvasElement;
@@ -26,19 +27,25 @@ export class Renderer {
   }
 
   public render(
-    board: Board,
+    game: Game,
     currentShape: Shape | null,
     nextShape: Shape | null,
     gameOver: boolean,
-    score: number // 接收分数
+    score: number, // 接收分数
+    currentTime: number // 新增：当前时间，用于动画
   ): void {
     this.clear();
-    this.drawBoard(board);
+    this.drawBoard(game.getBoard());
     if (currentShape) {
       this.drawShape(currentShape, this.context);
     }
     this.drawNextShape(nextShape); // 在独立的画布上绘制下一个图形
     this.updateScoreDisplay(score); // 更新分数显示
+
+    // 绘制消除动画
+    for (const effect of game.getActiveClearEffects()) {
+      effect.draw(this.context, this.cellSize, currentTime);
+    }
 
     if (gameOver) {
       this.drawGameOver();

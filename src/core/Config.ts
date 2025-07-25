@@ -33,3 +33,18 @@ export const QUICK_DROP_INTERVAL = 0;
  * 这个值越小，沙粒下落和滑动看起来就越流畅、越快
  */
 export const SAND_SETTLE_INTERVAL = 5;
+
+/**
+ * 消除动画：方块变成纯白色的持续时间（单位：毫秒）
+ */
+export const CLEAR_ANIMATION_WHITE_DURATION = 100;
+
+/**
+ * 消除动画：方块从白色渐变到透明并缩小的持续时间（单位：毫秒）
+ */
+export const CLEAR_ANIMATION_FADE_DURATION = 200;
+
+/**
+ * 旋转操作的冷却时间（单位：毫秒），防止长按连续旋转
+ */
+export const ROTATE_COOLDOWN = 200;

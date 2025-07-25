@@ -19,15 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
     lastTime = timestamp;
 
     // 1. 更新游戏世界的所有状态
-    game.update(deltaTime);
+    game.update(deltaTime, timestamp);
 
     // 2. 根据游戏世界的当前状态，渲染画面
     renderer.render(
-      game.getBoard(),
+      game,
       game.currentShape,
       game.getNextShape(),
       game.gameOver,
-      game.score
+      game.score,
+      timestamp
     );
 
     requestAnimationFrame(gameLoop);
