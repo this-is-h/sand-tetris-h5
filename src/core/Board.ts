@@ -1,7 +1,4 @@
-import { SCALE_FACTOR, BASE_BOARD_WIDTH, BASE_BOARD_HEIGHT } from './Config';
-
-export const BOARD_WIDTH = BASE_BOARD_WIDTH * SCALE_FACTOR;
-export const BOARD_HEIGHT = BASE_BOARD_HEIGHT * SCALE_FACTOR;
+import { BOARD_WIDTH, BOARD_HEIGHT } from './Config';
 
 export type Cell = string; // 用空字符串代表空格子，用颜色字符串代表有方块的格子
 

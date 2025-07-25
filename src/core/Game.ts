@@ -1,10 +1,6 @@
-import { Board, BOARD_WIDTH } from './Board';
+import { Board } from './Board';
 import { Shape, ShapeType, SHAPES } from './Shape';
-import {
-  NORMAL_DROP_INTERVAL,
-  SOFT_DROP_INTERVAL,
-  SAND_SETTLE_INTERVAL,
-} from './Config';
+import { NORMAL_DROP_INTERVAL, SOFT_DROP_INTERVAL, SAND_SETTLE_INTERVAL, BOARD_WIDTH} from './Config';
 
 export class Game {
   private board: Board;
@@ -12,7 +8,7 @@ export class Game {
   public nextShape: Shape | null = null;
   public gameOver: boolean;
   public isSoftDropping: boolean;
-  private isSettling: boolean; // 改为私有，只用于动画结算
+  private isSettling: boolean; // 用于动画结算
   public score: number; // 新增：游戏分数
 
   // 计时器状态，从 main.ts 移入 Game 类

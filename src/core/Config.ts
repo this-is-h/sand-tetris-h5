@@ -1,5 +1,3 @@
-// src/config.ts
-
 /**
  * 缩放因子
  * 这个值决定了 "Sand Blast" 版本的俄罗斯方块相对于原版被放大了多少倍。
@@ -8,10 +6,13 @@
 export const SCALE_FACTOR = 7;
 
 /**
- * 基础的游戏区域尺寸（以原版俄罗斯方块的格子为单位）
+ * 基础的游戏区域尺寸（以正常俄罗斯方块的格子为单位）
  */
-export const BASE_BOARD_WIDTH = 10;
-export const BASE_BOARD_HEIGHT = 20;
+const BASE_BOARD_WIDTH = 10;
+const BASE_BOARD_HEIGHT = 20;
+
+export const BOARD_WIDTH = BASE_BOARD_WIDTH * SCALE_FACTOR;
+export const BOARD_HEIGHT = BASE_BOARD_HEIGHT * SCALE_FACTOR;
 
 /**
  * 方块正常自动下落的时间间隔（单位：毫秒）
