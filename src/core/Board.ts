@@ -1,8 +1,9 @@
 import { BOARD_WIDTH, BOARD_HEIGHT } from './Config';
+import type { BlockType } from './Block';
 
-export type Cell = string; // 用空字符串代表空格子，用颜色字符串代表有方块的格子
+export type Cell = BlockType | ""; // 用BlockType代表格子类型
 
-export class SandBoard {
+export class Board {
     private grid: Cell[][];
 
     constructor() {
@@ -11,7 +12,7 @@ export class SandBoard {
 
     private createEmptyGrid(): Cell[][] {
         return Array.from({ length: BOARD_HEIGHT }, () =>
-            Array(BOARD_WIDTH).fill('')
+            Array(BOARD_WIDTH).fill("")
         );
     }
 
@@ -43,16 +44,16 @@ export class SandBoard {
         for (let y = BOARD_HEIGHT - 2; y >= 0; y--) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
                 const cell = this.getCell(x, y);
-                if (!cell) {
+                if (cell === "" || cell === undefined) {
                     continue; // 当前格子是空的，跳过
                 }
 
                 // --- 开始为这颗沙粒做决策 ---
 
                 // 决策 1：垂直下落 (最高优先级)
-                if (!this.getCell(x, y + 1)) {
-                    this.setCell(x, y + 1, cell);
-                    this.setCell(x, y, '');
+                if (this.getCell(x, y + 1) === "") {
+                    this.setCell(x, y + 1, cell as BlockType);
+                    this.setCell(x, y, "");
                     hasFallen = true;
                     continue; // 完成移动，处理下一个沙粒
                 }
@@ -61,29 +62,29 @@ export class SandBoard {
                 // 根据您精确定义的规则，检查左右两个方向的可行性
                 const canGoLeft =
                     this.isValidPosition(x - 1, y + 1) &&
-                    !this.getCell(x - 1, y + 1);
+                    this.getCell(x - 1, y + 1) === "";
                 const canGoRight =
                     this.isValidPosition(x + 1, y + 1) &&
-                    !this.getCell(x + 1, y + 1) && // 右下方是空的
-                    !this.getCell(x + 1, y); // 且正右方也是空的
+                    this.getCell(x + 1, y + 1) === "" && // 右下方是空的
+                    this.getCell(x + 1, y) === ""; // 且正右方也是空的
 
                 // 情况 B：如果左右两边都能滑动，随机选择一个方向
                 if (canGoLeft && canGoRight) {
                     const direction = Math.random() < 0.5 ? -1 : 1; // -1 代表向左, 1 代表向右
-                    this.setCell(x + direction, y + 1, cell);
-                    this.setCell(x, y, '');
+                    this.setCell(x + direction, y + 1, cell as BlockType);
+                    this.setCell(x, y, "");
                     hasFallen = true;
                 }
                 // 情况 A：如果只能向左滑动
                 else if (canGoLeft) {
-                    this.setCell(x - 1, y + 1, cell);
-                    this.setCell(x, y, '');
+                    this.setCell(x - 1, y + 1, cell as BlockType);
+                    this.setCell(x, y, "");
                     hasFallen = true;
                 }
                 // 情况 A：如果只能向右滑动
                 else if (canGoRight) {
-                    this.setCell(x + 1, y + 1, cell);
-                    this.setCell(x, y, '');
+                    this.setCell(x + 1, y + 1, cell as BlockType);
+                    this.setCell(x, y, "");
                     hasFallen = true;
                 }
             }
@@ -95,22 +96,22 @@ export class SandBoard {
      * 核心消除逻辑："流沙"消除
      * @returns 本次消除的总沙粒数量
      */
-    public clear(): { x: number; y: number; color: string }[] {
+    public clearSand(): { x: number; y: number; type: BlockType }[] {
         const visited = new Set<string>(); // 用于记录在本次消除中已经访问过的所有格子
-        const clearedCells: { x: number; y: number; color: string }[] = [];
+        const clearedCells: { x: number; y: number; type: BlockType }[] = [];
 
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
-                const cellColor = this.getCell(x, y);
+                const cellType = this.getCell(x, y);
                 const key = `${x},${y}`;
 
                 // 如果这个格子有颜色，并且我们还没有检查过它
-                if (cellColor && !visited.has(key)) {
+                if (cellType !== "" && cellType !== undefined && !visited.has(key)) {
                     // 就从这个格子开始，寻找所有和它相连的、同色的格子组成的团块
                     const group = this.findConnectedGroup(
                         x,
                         y,
-                        cellColor,
+                        cellType,
                         visited
                     );
 
@@ -141,10 +142,10 @@ export class SandBoard {
                         }
 
                         for (const { x, y } of sortedCells) {
-                            const color = this.getCell(x, y);
-                            if (color) {
-                                clearedCells.push({ x, y, color });
-                                this.setCell(x, y, '');
+                            const type = this.getCell(x, y);
+                            if (type !== "" && type !== undefined) {
+                                clearedCells.push({ x, y, type: type as BlockType });
+                                this.setCell(x, y, "");
                             }
                         }
                     }
@@ -157,7 +158,7 @@ export class SandBoard {
     private findConnectedGroup(
         startX: number,
         startY: number,
-        color: string,
+        type: BlockType,
         visited: Set<string>
     ) {
         const group = {
@@ -192,7 +193,7 @@ export class SandBoard {
                     // 检查邻居格子是否有效、同色，并且之前没有访问过
                     if (
                         this.isValidPosition(newX, newY) &&
-                        this.getCell(newX, newY) === color &&
+                        this.getCell(newX, newY) === (type as BlockType) &&
                         !visited.has(newKey)
                     ) {
                         visited.add(newKey); // 标记为已访问

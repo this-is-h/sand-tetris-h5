@@ -1,18 +1,16 @@
-import {
-    CLEAR_ANIMATION_WHITE_DURATION,
-    CLEAR_ANIMATION_FADE_DURATION,
-} from './core/Config';
+import { CLEAR_ANIMATION_WHITE_DURATION, CLEAR_ANIMATION_FADE_DURATION } from './core/Config';
+import { BLOCKS, type BlockType } from './core/Block';
 
 export class ClearEffect {
     x: number;
     y: number;
-    initialColor: string;
+    initialType: BlockType;
     startTime: number;
 
-    constructor(x: number, y: number, color: string) {
+    constructor(x: number, y: number, type: BlockType) {
         this.x = x;
         this.y = y;
-        this.initialColor = color;
+        this.initialType = type;
         this.startTime = Date.now();
     }
 
@@ -44,7 +42,7 @@ export class ClearEffect {
 
         if (elapsedTime < CLEAR_ANIMATION_WHITE_DURATION) {
             // 第一阶段：纯白色
-            context.fillStyle = 'white';
+            context.fillStyle = BLOCKS[this.initialType].color;
             context.fillRect(
                 this.x * cellSize,
                 this.y * cellSize,

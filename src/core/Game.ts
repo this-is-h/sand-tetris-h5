@@ -1,12 +1,12 @@
-import { SandBoard } from './SandBoard';
+import { Board } from './Board';
 import { ClearEffect } from '../Effect';
-import { Shape, ShapeType, SHAPES } from './Shape';
+import { BlockType, Block, BLOCKS } from './Block';
 import { NORMAL_DROP_INTERVAL, QUICK_DROP_INTERVAL, SAND_SETTLE_INTERVAL, BOARD_WIDTH } from './Config';
 
 export class Game {
-    private board: SandBoard;
-    public currentShape: Shape | null = null;
-    public nextShape: Shape | null = null;
+    private board: Board;
+    public currentShape: Block | null = null;
+    public nextShape: Block | null = null;
     public gameOver: boolean;
     public isSoftDropping: boolean;
     private isSettling: boolean; // 用于动画结算
@@ -51,7 +51,7 @@ export class Game {
     }
 
     private initialize(): void {
-        this.board = new SandBoard();
+        this.board = new Board();
         this.gameOver = false;
         this.isSoftDropping = false;
         this.isSettling = false;
@@ -60,18 +60,17 @@ export class Game {
         this.settleCounter = 0;
         this.score = 0; // 初始化分数
 
-        const shapeTypes = Object.keys(SHAPES) as ShapeType[];
-        const firstType =
-            shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-        this.nextShape = new Shape(firstType);
+        const blockTypes = Object.keys(BLOCKS) as BlockType[];
+        const firstType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+        this.nextShape = new Block(firstType);
         this.spawnShape();
     }
 
-    public getNextShape(): Shape | null {
+    public getNextShape(): Block | null {
         return this.nextShape;
     }
 
-    public getBoard(): SandBoard {
+    public getBoard(): Board {
         return this.board;
     }
 
@@ -95,10 +94,9 @@ export class Game {
             return;
         }
 
-        const shapeTypes = Object.keys(SHAPES) as ShapeType[];
-        const randomType =
-            shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-        this.nextShape = new Shape(randomType);
+        const shapeTypes = Object.keys(BLOCKS) as BlockType[];
+        const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        this.nextShape = new Block(randomType);
     }
 
     private moveShapeDown(): void {
@@ -116,11 +114,11 @@ export class Game {
 
     private lockShape(): void {
         if (!this.currentShape) return;
-        const { x, y, matrix, color } = this.currentShape;
+        const { x, y, matrix, type } = this.currentShape;
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col]) {
-                    this.board.setCell(x + col, y + row, color);
+                    this.board.setCell(x + col, y + row, type);
                 }
             }
         }
@@ -139,14 +137,14 @@ export class Game {
         // 2. 如果没有任何沙粒可以再移动了，说明沙盘“暂时稳定”了
         if (!hasMoved) {
             // 3. 在这个稳定状态下，检查是否可以消除
-            const clearedCells = this.board.clear();
+            const clearedCells = this.board.clearSand();
 
             // 4. 如果发生了消除
             if (clearedCells.length > 0) {
                 this.score += clearedCells.length; // 累加分数
                 for (const cell of clearedCells) {
                     this.activeClearEffects.push(
-                        new ClearEffect(cell.x, cell.y, cell.color)
+                        new ClearEffect(cell.x, cell.y, cell.type)
                     );
                 }
                 // 什么也不做，让下一次的 update() 循环自动地、再次地进入 settleSand 流程，
@@ -174,7 +172,7 @@ export class Game {
     }
 
     public clearBoard(): void {
-        this.board = new SandBoard();
+        this.board = new Board();
         this.currentShape = null;
         this.spawnShape();
     }
@@ -218,7 +216,7 @@ export class Game {
                         boardX >= BOARD_WIDTH ||
                         boardY >= this.board.getGrid().length ||
                         (boardY >= 0 &&
-                            this.board.getCell(boardX, boardY) !== '')
+                            this.board.getCell(boardX, boardY) !== "")
                     ) {
                         return true;
                     }
@@ -238,8 +236,8 @@ export class Game {
         this.isSoftDropping = false;
     }
 
-    public setNextShape(type: ShapeType): void {
-        this.nextShape = new Shape(type);
+    public setNextShape(type: Exclude<BlockType, "">): void {
+        this.nextShape = new Block(type);
     }
 
     public reset(): void {

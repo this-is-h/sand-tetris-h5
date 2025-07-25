@@ -1,74 +1,87 @@
 import { SCALE_FACTOR } from './Config';
 
+/**
+ * 方块类型枚举
+ * 使用数字字符串以节省内存，并作为索引映射到颜色
+ */
+export const enum BlockType {
+    I = '1',
+    L = '2',
+    J = '3',
+    S = '4',
+    Z = '5',
+    T = '6',
+    O = '7',
+}
+
 // 定义“形状信息”
-export interface IShapeInfo {
+export interface IBlockInfo {
     matrix: number[][];
     color: string;
 }
 
-export const SHAPES: { [key: string]: IShapeInfo } = {
-    I: {
+
+export const BLOCKS: { [key in BlockType]: IBlockInfo } = {
+    [BlockType.I]: {
         matrix: [[1, 1, 1, 1]],
-        color: '#40E0D0', // 青色 (绿松石色)
+        color: '#40E0D0'
     },
-    L: {
+    [BlockType.L]: {
         matrix: [
             [0, 0, 1],
             [1, 1, 1],
         ],
-        color: '#E69138', // 橙色 (更深、更偏棕的橙色)
+        color: '#E69138'
     },
-    J: {
+    [BlockType.J]: {
         matrix: [
             [1, 0, 0],
             [1, 1, 1],
         ],
-        color: '#6495ED', // 蓝色 (矢车菊蓝)
+        color: '#6495ED'
     },
-    S: {
+    [BlockType.S]: {
         matrix: [
             [0, 1, 1],
             [1, 1, 0],
         ],
-        color: '#98FB98', // 绿色 (淡绿色)
+        color: '#98FB98'
     },
-    Z: {
+    [BlockType.Z]: {
         matrix: [
             [1, 1, 0],
             [0, 1, 1],
         ],
-        color: '#FF6B6B', // 红色 (珊瑚红)
+        color: '#FF6B6B'
     },
-    T: {
+    [BlockType.T]: {
         matrix: [
             [0, 1, 0],
             [1, 1, 1],
         ],
-        color: '#BA55D3', // 紫色 (中兰花紫)
+        color: '#BA55D3'
     },
-    O: {
+    [BlockType.O]: {
         matrix: [
             [1, 1],
             [1, 1],
         ],
-        color: '#F0E68C', // 黄色 (卡其色)
+        color: '#F0E68C'
     },
 };
 
-export type ShapeType = keyof typeof SHAPES;
-
-export class Shape {
+export class Block {
     public x: number;
     public y: number;
     public matrix: number[][];
-    public color: string;
+    public type: BlockType;
 
-    constructor(type: ShapeType) {
-        const shape: IShapeInfo = SHAPES[type];
+    constructor(type: BlockType) {
+        const block: IBlockInfo = BLOCKS[type];
         this.x = 0;
         this.y = 0;
-        this.matrix = this.createScaledMatrix(shape.matrix);
-        this.color = shape.color;
+        this.matrix = this.createScaledMatrix(block.matrix);
+        this.type = type;
     }
 
     /**

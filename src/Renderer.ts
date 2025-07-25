@@ -1,7 +1,7 @@
-import { SandBoard } from './core/SandBoard';
+import { Board } from './core/Board';
 import { BOARD_HEIGHT, BOARD_WIDTH, SCALE_FACTOR } from './core/Config';
 import { Game } from './core/Game';
-import { Shape } from './core/Shape';
+import { BLOCKS, BlockType, Block } from './core/Block';
 
 export class Renderer {
     private canvas: HTMLCanvasElement;
@@ -34,8 +34,8 @@ export class Renderer {
 
     public render(
         game: Game,
-        currentShape: Shape | null,
-        nextShape: Shape | null,
+        currentShape: Block | null,
+        nextShape: Block | null,
         gameOver: boolean,
         score: number, // 接收分数
         currentTime: number // 新增：当前时间，用于动画
@@ -68,15 +68,16 @@ export class Renderer {
         );
     }
 
-    private drawBoard(board: SandBoard): void {
+    private drawBoard(board: Board): void {
         const grid = board.getGrid();
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
-                if (grid[y][x] !== '') {
+                const cellType = grid[y][x];
+                if (cellType !== "") {
                     this.drawCell(
                         x,
                         y,
-                        grid[y][x],
+                        BLOCKS[cellType].color,
                         this.context,
                         this.cellSize
                     );
@@ -85,15 +86,15 @@ export class Renderer {
         }
     }
 
-    private drawShape(shape: Shape, context: CanvasRenderingContext2D): void {
-        const { x, y, matrix, color } = shape;
+    private drawShape(shape: Block, context: CanvasRenderingContext2D): void {
+        const { x, y, matrix, type } = shape;
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col]) {
                     this.drawCell(
                         x + col,
                         y + row,
-                        color,
+                        BLOCKS[type].color,
                         context,
                         this.cellSize
                     );
@@ -102,10 +103,10 @@ export class Renderer {
         }
     }
 
-    private drawNextShape(shape: Shape | null): void {
+    private drawNextShape(shape: Block | null): void {
         if (!shape) return;
 
-        const { matrix, color } = shape;
+        const { matrix, type } = shape;
         const maxCellSize = 4; // 最大就是4格（I形）
         const nextCellSize =
             this.nextShapeCanvas.width / (maxCellSize * SCALE_FACTOR) / 1.5; // 1.5倍缩小
@@ -123,7 +124,7 @@ export class Renderer {
                     this.drawCell(
                         offsetX / nextCellSize + col,
                         offsetY / nextCellSize + row,
-                        color,
+                        BLOCKS[type].color,
                         this.nextShapeContext,
                         nextCellSize
                     );

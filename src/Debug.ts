@@ -1,5 +1,5 @@
 import { Game } from './core/Game';
-import { SHAPES, ShapeType } from './core/Shape';
+import { BLOCKS, type BlockType } from './core/Block';
 
 export class DebugMenu {
     private game: Game;
@@ -43,11 +43,11 @@ export class DebugMenu {
         const selectorContainer = document.getElementById('shape-selector');
         if (!selectorContainer) return;
 
-        const shapeTypes = Object.keys(SHAPES) as ShapeType[];
+        const blockTypes = Object.keys(BLOCKS) as BlockType[];
 
-        for (const type of shapeTypes) {
+        for (const type of blockTypes) {
             const button = document.createElement('button');
-            button.innerText = type + '';
+            button.innerText = type;
             button.addEventListener('click', () => {
                 this.game.setNextShape(type);
             });
