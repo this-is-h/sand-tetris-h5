@@ -14,13 +14,19 @@
       <div style="display: flex; align-items: flex-start; gap: 20px">
         <!-- 第一列：只包含主游戏画布 -->
         <div>
-          <canvas id="game-canvas" width="320" height="640"></canvas>
+          <canvas id="game-canvas" width="350" height="700"></canvas>
         </div>
 
         <!-- 第二列：包含 Next 图形和调试菜单 -->
         <div>
-          <canvas id="next-shape-canvas" width="128" height="128"></canvas>
-          <div id="debug-menu">
+          <canvas id="next-shape-canvas" width="140" height="140"></canvas>
+
+        <div id="score-display">
+          <h3>分数</h3>
+          <p id="score-value">0</p>
+        </div>
+
+        <div id="debug-menu">
             <h3>调试菜单</h3>
             <button id="reset-button">重置</button>
           <button id="clear-board-button">清除</button>

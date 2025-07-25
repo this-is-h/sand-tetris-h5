@@ -38,11 +38,11 @@ export class Board {
 
   /**
    * 核心消除逻辑："流沙"消除
-   * @returns 如果成功消除了至少一个团块，则返回 true，否则返回 false
+   * @returns 本次消除的总沙粒数量
    */
-  public clearSand(): boolean {
+  public clearSand(): number {
     const visited = new Set<string>(); // 用于记录在本次消除中已经访问过的所有格子
-    let clearedAny = false;
+    let clearedCount = 0;
 
     for (let y = 0; y < BOARD_HEIGHT; y++) {
       for (let x = 0; x < BOARD_WIDTH; x++) {
@@ -60,12 +60,12 @@ export class Board {
             for (const { x, y } of group.cells) {
               this.setCell(x, y, '');
             }
-            clearedAny = true;
+            clearedCount += group.cells.length;
           }
         }
       }
     }
-    return clearedAny;
+    return clearedCount;
   }
 
   /**

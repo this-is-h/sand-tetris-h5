@@ -13,6 +13,7 @@ export class Game {
   public gameOver: boolean;
   public isSoftDropping: boolean;
   private isSettling: boolean; // 改为私有，只用于动画结算
+  public score: number; // 新增：游戏分数
 
   // 计时器状态，从 main.ts 移入 Game 类
   private dropCounter: number;
@@ -57,6 +58,7 @@ export class Game {
     this.currentShape = null;
     this.dropCounter = 0;
     this.settleCounter = 0;
+    this.score = 0; // 初始化分数
 
     const shapeTypes = Object.keys(SHAPES) as ShapeType[];
     const firstType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
@@ -135,10 +137,11 @@ export class Game {
     // 2. 如果没有任何沙粒可以再移动了，说明沙盘“暂时稳定”了
     if (!hasMoved) {
       // 3. 在这个稳定状态下，检查是否可以消除
-      const hasCleared = this.board.clearSand();
+      const clearedCount = this.board.clearSand();
 
       // 4. 如果发生了消除
-      if (hasCleared) {
+      if (clearedCount > 0) {
+        this.score += clearedCount; // 累加分数
         // 什么也不做，让下一次的 update() 循环自动地、再次地进入 settleSand 流程，
         // 从而让上方的沙粒落入新的空隙中，形成“连击”效果。
       } else {
@@ -152,27 +155,15 @@ export class Game {
 
   public hardDrop(): void {
     if (!this.currentShape) return;
+
+    // 1. 瞬间计算出最终掉落位置
     while (!this.checkCollision()) {
       this.currentShape.y++;
     }
     this.currentShape.y--;
 
-    // --- 开始独立的、同步的、瞬间的结算 ---
-    const { x, y, matrix, color } = this.currentShape;
-    for (let row = 0; row < matrix.length; row++) {
-      for (let col = 0; col < matrix[row].length; col++) {
-        if (matrix[row][col]) {
-          this.board.setCell(x + col, y + row, color);
-        }
-      }
-    }
-
-    this.board.clearSand();
-    while (this.board.updateSandStep()) {
-      // 同步地、急速地循环，直到沙盘稳定
-    }
-
-    this.spawnShape();
+    // 2. 像正常的 lockShape 一样，将方块“印”在游戏区域上，并启动“沙盘结算”动画
+    this.lockShape();
   }
 
   public clearBoard(): void {

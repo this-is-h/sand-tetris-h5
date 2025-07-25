@@ -8,6 +8,7 @@ export class DebugMenu {
     this.game = game;
     this.setupResetButton();
     this.setupClearBoardButton();
+    this.setupHardDropButton();
     this.setupShapeSelector();
   }
 
@@ -46,7 +47,7 @@ export class DebugMenu {
 
     for (const type of shapeTypes) {
       const button = document.createElement('button');
-      button.innerText = type;
+      button.innerText = type + '';
       button.addEventListener('click', () => {
         this.game.setNextShape(type);
       });

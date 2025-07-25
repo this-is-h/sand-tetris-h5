@@ -1,51 +1,57 @@
 import { SCALE_FACTOR } from './config';
 
-export const SHAPES = {
+// 定义“形状信息”
+export interface IShapeInfo {
+  matrix: number[][];
+  color: string;
+}
+
+export const SHAPES: { [key: string]: IShapeInfo } = {
   I: {
     matrix: [[1, 1, 1, 1]],
-    color: 'cyan',
+    color: '#40E0D0', // 青色 (绿松石色)
   },
   L: {
     matrix: [
       [0, 0, 1],
       [1, 1, 1],
     ],
-    color: 'orange',
+    color: '#E69138', // 橙色 (更深、更偏棕的橙色)
   },
   J: {
     matrix: [
       [1, 0, 0],
       [1, 1, 1],
     ],
-    color: 'blue',
+    color: '#6495ED', // 蓝色 (矢车菊蓝)
   },
   S: {
     matrix: [
       [0, 1, 1],
       [1, 1, 0],
     ],
-    color: 'green',
+    color: '#98FB98', // 绿色 (淡绿色)
   },
   Z: {
     matrix: [
       [1, 1, 0],
       [0, 1, 1],
     ],
-    color: 'red',
+    color: '#FF6B6B', // 红色 (珊瑚红)
   },
   T: {
     matrix: [
       [0, 1, 0],
       [1, 1, 1],
     ],
-    color: 'purple',
+    color: '#BA55D3', // 紫色 (中兰花紫)
   },
   O: {
     matrix: [
       [1, 1],
       [1, 1],
     ],
-    color: 'yellow',
+    color: '#F0E68C', // 黄色 (卡其色)
   },
 };
 
@@ -58,7 +64,7 @@ export class Shape {
   public color: string;
 
   constructor(type: ShapeType) {
-    const shape = SHAPES[type];
+    const shape: IShapeInfo = SHAPES[type];
     this.x = 0;
     this.y = 0;
     this.matrix = this.createScaledMatrix(shape.matrix);

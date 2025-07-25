@@ -7,6 +7,7 @@ export class Renderer {
   private context: CanvasRenderingContext2D;
   private nextShapeCanvas: HTMLCanvasElement;
   private nextShapeContext: CanvasRenderingContext2D;
+  private scoreValueElement: HTMLElement; // 新增：分数显示元素
   private cellSize: number; // 每个沙粒的像素尺寸
 
   constructor(canvasId: string, nextShapeCanvasId: string) {
@@ -18,6 +19,8 @@ export class Renderer {
     ) as HTMLCanvasElement;
     this.nextShapeContext = this.nextShapeCanvas.getContext('2d')!;
 
+    this.scoreValueElement = document.getElementById('score-value') as HTMLElement; // 获取分数显示元素
+
     // 动态计算每个沙粒的尺寸，以适应画布大小
     this.cellSize = this.canvas.width / BOARD_WIDTH;
   }
@@ -26,7 +29,8 @@ export class Renderer {
     board: Board,
     currentShape: Shape | null,
     nextShape: Shape | null,
-    gameOver: boolean
+    gameOver: boolean,
+    score: number // 新增：接收分数
   ): void {
     this.clear();
     this.drawBoard(board);
@@ -39,6 +43,7 @@ export class Renderer {
     if (gameOver) {
       this.drawGameOver();
     }
+    this.updateScoreDisplay(score); // 更新分数显示
   }
 
   private clear(): void {
@@ -106,11 +111,18 @@ export class Renderer {
     cellSize: number
   ): void {
     context.fillStyle = color;
-    context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-    // 当沙粒太小时，不绘制边框，以提高性能和视觉效果
-    if (cellSize > 2) {
-      context.strokeStyle = '#222';
-      context.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+    // 确保绘制坐标是整数，并增加1像素以完全覆盖，消除缝隙
+    context.fillRect(
+      Math.floor(x * cellSize),
+      Math.floor(y * cellSize),
+      cellSize + 1,
+      cellSize + 1
+    );
+  }
+
+  private updateScoreDisplay(score: number): void {
+    if (this.scoreValueElement) {
+      this.scoreValueElement.innerText = score.toString();
     }
   }
 
