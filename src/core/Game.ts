@@ -5,8 +5,8 @@ import { NORMAL_DROP_INTERVAL, QUICK_DROP_INTERVAL, SAND_SETTLE_INTERVAL, BOARD_
 
 export class Game {
     private board: Board;
-    public currentShape: Block | null = null;
-    public nextShape: Block | null = null;
+    public currentBlock: Block | null = null;
+    public nextBlock: Block | null = null;
     public gameOver: boolean;
     public isSoftDropping: boolean;
     private isSettling: boolean; // 用于动画结算
@@ -37,14 +37,14 @@ export class Game {
                 this.settleSand();
                 this.settleCounter = 0;
             }
-        } else if (this.currentShape) {
+        } else if (this.currentBlock) {
             this.dropCounter += deltaTime;
             const currentDropInterval = this.isSoftDropping
                 ? QUICK_DROP_INTERVAL
                 : NORMAL_DROP_INTERVAL;
 
             if (this.dropCounter > currentDropInterval) {
-                this.moveShapeDown();
+                this.moveBlockDown();
                 this.dropCounter = 0; // 关键：在下落后，立即重置计时器
             }
         }
@@ -55,66 +55,66 @@ export class Game {
         this.gameOver = false;
         this.isSoftDropping = false;
         this.isSettling = false;
-        this.currentShape = null;
+        this.currentBlock = null;
         this.dropCounter = 0;
         this.settleCounter = 0;
         this.score = 0; // 初始化分数
 
         const blockTypes = Object.keys(BLOCKS) as BlockType[];
         const firstType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-        this.nextShape = new Block(firstType);
-        this.spawnShape();
+        this.nextBlock = new Block(firstType);
+        this.spawnBlock();
     }
 
-    public getNextShape(): Block | null {
-        return this.nextShape;
+    public getNextBlock(): Block | null {
+        return this.nextBlock;
     }
 
     public getBoard(): Board {
         return this.board;
     }
 
-    private spawnShape(): void {
-        this.currentShape = this.nextShape;
+    private spawnBlock(): void {
+        this.currentBlock = this.nextBlock;
         this.dropCounter = 0;
 
-        if (this.currentShape) {
-            this.currentShape.x = Math.floor(
-                (BOARD_WIDTH - this.currentShape.matrix[0].length) / 2
+        if (this.currentBlock) {
+            this.currentBlock.x = Math.floor(
+                (BOARD_WIDTH - this.currentBlock.matrix[0].length) / 2
             );
-            this.currentShape.y = -this.currentShape.matrix.length;
+            this.currentBlock.y = -this.currentBlock.matrix.length;
 
             if (this.checkCollision()) {
                 this.gameOver = true;
-                this.currentShape = null;
-                this.nextShape = null;
+                this.currentBlock = null;
+                this.nextBlock = null;
                 return;
             }
         } else if (this.gameOver) {
             return;
         }
 
-        const shapeTypes = Object.keys(BLOCKS) as BlockType[];
-        const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-        this.nextShape = new Block(randomType);
+        const blockTypes = Object.keys(BLOCKS) as BlockType[];
+        const randomType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+        this.nextBlock = new Block(randomType);
     }
 
-    private moveShapeDown(): void {
-        if (!this.currentShape) return;
-        this.currentShape.y++;
+    private moveBlockDown(): void {
+        if (!this.currentBlock) return;
+        this.currentBlock.y++;
         if (this.checkCollision()) {
-            this.currentShape.y--;
-            if (this.currentShape.y < 0) {
+            this.currentBlock.y--;
+            if (this.currentBlock.y < 0) {
                 this.gameOver = true;
                 return;
             }
-            this.lockShape();
+            this.lockBlock();
         }
     }
 
-    private lockShape(): void {
-        if (!this.currentShape) return;
-        const { x, y, matrix, type } = this.currentShape;
+    private lockBlock(): void {
+        if (!this.currentBlock) return;
+        const { x, y, matrix, type } = this.currentBlock;
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col]) {
@@ -124,7 +124,7 @@ export class Game {
         }
         // 方块锁定后，只做一件事：启动沙盘结算模式
         this.isSettling = true;
-        this.currentShape = null;
+        this.currentBlock = null;
     }
 
     /**
@@ -153,59 +153,59 @@ export class Game {
                 // 5. 如果既没有任何沙粒移动，也没有发生任何消除，
                 //    说明沙盘已经达到了“最终稳定”状态。
                 this.isSettling = false; // 结束结算模式
-                this.spawnShape(); // 生成下一个方块
+                this.spawnBlock(); // 生成下一个方块
             }
         }
     }
 
     public hardDrop(): void {
-        if (!this.currentShape) return;
+        if (!this.currentBlock) return;
 
         // 1. 瞬间计算出最终掉落位置
         while (!this.checkCollision()) {
-            this.currentShape.y++;
+            this.currentBlock.y++;
         }
-        this.currentShape.y--;
+        this.currentBlock.y--;
 
-        // 2. 像正常的 lockShape 一样，将方块“印”在游戏区域上，并启动“沙盘结算”动画
-        this.lockShape();
+        // 2. 像正常的 lockBlock 一样，将方块“印”在游戏区域上，并启动“沙盘结算”动画
+        this.lockBlock();
     }
 
     public clearBoard(): void {
         this.board = new Board();
-        this.currentShape = null;
-        this.spawnShape();
+        this.currentBlock = null;
+        this.spawnBlock();
     }
 
-    public moveShapeLeft(): void {
-        if (!this.currentShape) return;
-        this.currentShape.x--;
+    public moveBlockLeft(): void {
+        if (!this.currentBlock) return;
+        this.currentBlock.x--;
         if (this.checkCollision()) {
-            this.currentShape.x++;
+            this.currentBlock.x++;
         }
     }
 
-    public moveShapeRight(): void {
-        if (!this.currentShape) return;
-        this.currentShape.x++;
+    public moveBlockRight(): void {
+        if (!this.currentBlock) return;
+        this.currentBlock.x++;
         if (this.checkCollision()) {
-            this.currentShape.x--;
+            this.currentBlock.x--;
         }
     }
 
-    public rotateShape(): void {
-        if (!this.currentShape) return;
-        this.currentShape.rotate();
+    public rotateBlock(): void {
+        if (!this.currentBlock) return;
+        this.currentBlock.rotate();
         if (this.checkCollision()) {
-            this.currentShape.rotate();
-            this.currentShape.rotate();
-            this.currentShape.rotate();
+            this.currentBlock.rotate();
+            this.currentBlock.rotate();
+            this.currentBlock.rotate();
         }
     }
 
     private checkCollision(): boolean {
-        if (!this.currentShape) return false;
-        const { x, y, matrix } = this.currentShape;
+        if (!this.currentBlock) return false;
+        const { x, y, matrix } = this.currentBlock;
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col]) {
@@ -236,8 +236,8 @@ export class Game {
         this.isSoftDropping = false;
     }
 
-    public setNextShape(type: Exclude<BlockType, "">): void {
-        this.nextShape = new Block(type);
+    public setNextBlock(type: Exclude<BlockType, "">): void {
+        this.nextBlock = new Block(type);
     }
 
     public reset(): void {

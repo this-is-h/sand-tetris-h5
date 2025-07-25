@@ -16,10 +16,10 @@ export class InputHandler {
 
         switch (event.key) {
             case 'ArrowLeft':
-                this.game.moveShapeLeft();
+                this.game.moveBlockLeft();
                 break;
             case 'ArrowRight':
-                this.game.moveShapeRight();
+                this.game.moveBlockRight();
                 break;
             case 'ArrowDown':
                 this.game.startSoftDrop();
@@ -28,7 +28,7 @@ export class InputHandler {
                 const currentTime = Date.now();
                 if (currentTime - this.lastRotateTime >= 300) {
                     // 防止长按连续旋转
-                    this.game.rotateShape();
+                    this.game.rotateBlock();
                     this.lastRotateTime = currentTime;
                 }
                 break;

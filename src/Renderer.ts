@@ -6,23 +6,23 @@ import { BLOCKS, BlockType, Block } from './core/Block';
 export class Renderer {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-    private nextShapeCanvas: HTMLCanvasElement;
-    private nextShapeContext: CanvasRenderingContext2D;
+    private nextBlockCanvas: HTMLCanvasElement;
+    private nextBlockContext: CanvasRenderingContext2D;
     private scoreValueElement: HTMLElement; // 新增：分数显示元素
     private cellSize: number; // 每个沙粒的像素尺寸
 
     constructor(
         canvasId: string,
-        nextShapeCanvasId: string,
+        nextBlockCanvasId: string,
         scoreValueElementId: string
     ) {
         this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
         this.context = this.canvas.getContext('2d')!;
 
-        this.nextShapeCanvas = document.getElementById(
-            nextShapeCanvasId
+        this.nextBlockCanvas = document.getElementById(
+            nextBlockCanvasId
         ) as HTMLCanvasElement;
-        this.nextShapeContext = this.nextShapeCanvas.getContext('2d')!;
+        this.nextBlockContext = this.nextBlockCanvas.getContext('2d')!;
 
         this.scoreValueElement = document.getElementById(
             scoreValueElementId
@@ -34,18 +34,18 @@ export class Renderer {
 
     public render(
         game: Game,
-        currentShape: Block | null,
-        nextShape: Block | null,
+        currentBlock: Block | null,
+        nextBlock: Block | null,
         gameOver: boolean,
         score: number, // 接收分数
         currentTime: number // 新增：当前时间，用于动画
     ): void {
         this.clear();
         this.drawBoard(game.getBoard());
-        if (currentShape) {
-            this.drawShape(currentShape, this.context);
+        if (currentBlock) {
+            this.drawBlock(currentBlock, this.context);
         }
-        this.drawNextShape(nextShape); // 在独立的画布上绘制下一个图形
+        this.drawNextBlock(nextBlock); // 在独立的画布上绘制下一个图形
         this.updateScoreDisplay(score); // 更新分数显示
 
         // 绘制消除动画
@@ -60,11 +60,11 @@ export class Renderer {
 
     private clear(): void {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.nextShapeContext.clearRect(
+        this.nextBlockContext.clearRect(
             0,
             0,
-            this.nextShapeCanvas.width,
-            this.nextShapeCanvas.height
+            this.nextBlockCanvas.width,
+            this.nextBlockCanvas.height
         );
     }
 
@@ -86,8 +86,8 @@ export class Renderer {
         }
     }
 
-    private drawShape(shape: Block, context: CanvasRenderingContext2D): void {
-        const { x, y, matrix, type } = shape;
+    private drawBlock(block: Block, context: CanvasRenderingContext2D): void {
+        const { x, y, matrix, type } = block;
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col]) {
@@ -103,20 +103,20 @@ export class Renderer {
         }
     }
 
-    private drawNextShape(shape: Block | null): void {
-        if (!shape) return;
+    private drawNextBlock(block: Block | null): void {
+        if (!block) return;
 
-        const { matrix, type } = shape;
+        const { matrix, type } = block;
         const maxCellSize = 4; // 最大就是4格（I形）
         const nextCellSize =
-            this.nextShapeCanvas.width / (maxCellSize * SCALE_FACTOR) / 1.5; // 1.5倍缩小
+            this.nextBlockCanvas.width / (maxCellSize * SCALE_FACTOR) / 1.5; // 1.5倍缩小
 
-        const shapeWidth = matrix[0].length;
-        const shapeHeight = matrix.length;
+        const blockWidth = matrix[0].length;
+        const blockHeight = matrix.length;
         const offsetX =
-            (this.nextShapeCanvas.width - shapeWidth * nextCellSize) / 2;
+            (this.nextBlockCanvas.width - blockWidth * nextCellSize) / 2;
         const offsetY =
-            (this.nextShapeCanvas.height - shapeHeight * nextCellSize) / 2;
+            (this.nextBlockCanvas.height - blockHeight * nextCellSize) / 2;
 
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
@@ -125,7 +125,7 @@ export class Renderer {
                         offsetX / nextCellSize + col,
                         offsetY / nextCellSize + row,
                         BLOCKS[type].color,
-                        this.nextShapeContext,
+                        this.nextBlockContext,
                         nextCellSize
                     );
                 }

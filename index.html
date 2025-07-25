@@ -14,7 +14,7 @@
             <!-- 左侧信息栏：包含 Next 图形和分数 -->
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <h2>Next</h2>
-                <canvas id="next-shape-canvas" width="140" height="140"></canvas>
+                <canvas id="next-block-canvas" width="140" height="140"></canvas>
 
                 <div id="score-display">
                     <h2>Score</h2>
@@ -36,8 +36,8 @@
                     <button id="reset-button">Reset</button>
                     <button id="clear-board-button">Clear</button>
                     <button id="hard-drop-button">Fall</button>
-                    <h3>Set the next shape</h3>
-                    <div id="shape-selector"></div>
+                    <h3>Set the next block</h3>
+                    <div id="block-selector"></div>
                 </div>
             </div>
         </div>
@@ -75,7 +75,7 @@
             text-align: center;
         }
 
-        #shape-selector button {
+        #block-selector button {
             margin: 2px;
             padding: 5px 10px;
             font-family: monospace;

@@ -8,7 +8,7 @@ let renderer: Renderer;
 
 document.addEventListener('DOMContentLoaded', () => {
     game = new Game();
-    renderer = new Renderer('game-canvas', 'next-shape-canvas', 'score-value');
+    renderer = new Renderer('game-canvas', 'next-block-canvas', 'score-value');
     new InputHandler(game);
     new DebugMenu(game);
 
@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. 根据游戏世界的当前状态，渲染画面
         renderer.render(
             game,
-            game.currentShape,
-            game.getNextShape(),
+            game.currentBlock,
+            game.getNextBlock(),
             game.gameOver,
             game.score,
             timestamp

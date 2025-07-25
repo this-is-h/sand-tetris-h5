@@ -9,7 +9,7 @@ export class DebugMenu {
         this.setupResetButton();
         this.setupClearBoardButton();
         this.setupHardDropButton();
-        this.setupShapeSelector();
+        this.setupBlockSelector();
     }
 
     private setupResetButton(): void {
@@ -39,8 +39,8 @@ export class DebugMenu {
         }
     }
 
-    private setupShapeSelector(): void {
-        const selectorContainer = document.getElementById('shape-selector');
+    private setupBlockSelector(): void {
+        const selectorContainer = document.getElementById('block-selector');
         if (!selectorContainer) return;
 
         const blockTypes = Object.keys(BLOCKS) as BlockType[];
@@ -49,7 +49,7 @@ export class DebugMenu {
             const button = document.createElement('button');
             button.innerText = type;
             button.addEventListener('click', () => {
-                this.game.setNextShape(type);
+                this.game.setNextBlock(type);
             });
             selectorContainer.appendChild(button);
         }
