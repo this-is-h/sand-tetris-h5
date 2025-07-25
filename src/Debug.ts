@@ -1,5 +1,5 @@
-import { Game } from './Game';
-import { SHAPES, ShapeType } from './Shape';
+import { Game } from './core/Game';
+import { SHAPES, ShapeType } from './core/Shape';
 
 export class DebugMenu {
   private game: Game;

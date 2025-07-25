@@ -1,6 +1,6 @@
-import { Board, BOARD_WIDTH, BOARD_HEIGHT, Cell } from './Board';
-import { Shape } from './Shape';
-import { SCALE_FACTOR } from './config';
+import { Board, BOARD_WIDTH, BOARD_HEIGHT, Cell } from './core/Board';
+import { Shape } from './core/Shape';
+import { SCALE_FACTOR } from './core/Config';
 
 export class Renderer {
   private canvas: HTMLCanvasElement;

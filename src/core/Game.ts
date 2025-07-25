@@ -4,7 +4,7 @@ import {
   NORMAL_DROP_INTERVAL,
   SOFT_DROP_INTERVAL,
   SAND_SETTLE_INTERVAL,
-} from './config';
+} from './Config';
 
 export class Game {
   private board: Board;

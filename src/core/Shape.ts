@@ -1,4 +1,4 @@
-import { SCALE_FACTOR } from './config';
+import { SCALE_FACTOR } from './Config';
 
 // 定义“形状信息”
 export interface IShapeInfo {

@@ -1,4 +1,4 @@
-import { Game } from './Game';
+import { Game } from './core/Game';
 import { Renderer } from './Renderer';
 import { InputHandler } from './InputHandler';
 import { DebugMenu } from './Debug';
