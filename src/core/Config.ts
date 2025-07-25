@@ -11,6 +11,10 @@ export const SCALE_FACTOR = 7;
 const BASE_BOARD_WIDTH = 10;
 const BASE_BOARD_HEIGHT = 20;
 
+/**
+ * 游戏区域的宽度和高度
+ * 通过将基础尺寸乘以缩放因子来计算
+ */
 export const BOARD_WIDTH = BASE_BOARD_WIDTH * SCALE_FACTOR;
 export const BOARD_HEIGHT = BASE_BOARD_HEIGHT * SCALE_FACTOR;
 
@@ -22,7 +26,7 @@ export const NORMAL_DROP_INTERVAL = 50;
 /**
  * 玩家按住"向下"键时，方块的快速下落时间间隔（单位：毫秒）
  */
-export const SOFT_DROP_INTERVAL = 1;
+export const QUICK_DROP_INTERVAL = 0;
 
 /**
  * 沙粒物理演算的时间间隔（单位：毫秒）

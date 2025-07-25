@@ -1,6 +1,6 @@
 import { Board } from './Board';
 import { Shape, ShapeType, SHAPES } from './Shape';
-import { NORMAL_DROP_INTERVAL, SOFT_DROP_INTERVAL, SAND_SETTLE_INTERVAL, BOARD_WIDTH} from './Config';
+import { NORMAL_DROP_INTERVAL, QUICK_DROP_INTERVAL, SAND_SETTLE_INTERVAL, BOARD_WIDTH} from './Config';
 
 export class Game {
   private board: Board;
@@ -36,7 +36,7 @@ export class Game {
     } else if (this.currentShape) {
       this.dropCounter += deltaTime;
       const currentDropInterval = this.isSoftDropping
-        ? SOFT_DROP_INTERVAL
+        ? QUICK_DROP_INTERVAL
         : NORMAL_DROP_INTERVAL;
 
       if (this.dropCounter > currentDropInterval) {
