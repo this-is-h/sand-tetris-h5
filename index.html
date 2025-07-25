@@ -1,97 +1,114 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
-    <title>Gemini Sand Tetris</title>
-  </head>
-  <body>
+    <title>Sand Tetris</title>
+</head>
+
+<body>
     <!-- 游戏总容器 -->
     <div style="text-align: center">
-      <!-- 1. 标题独立出来，位于最顶部 -->
-      <h1>Gemini Sand Tetris</h1>
+        <!-- 一个新的 Flex 容器，专门用于对齐主游戏区、左侧信息栏和右侧调试菜单 -->
+        <div style="display: flex; align-items: flex-start; gap: 20px">
+            <!-- 左侧信息栏：包含 Next 图形和分数 -->
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <h2>Next</h2>
+                <canvas id="next-shape-canvas" width="140" height="140"></canvas>
 
-      <!-- 2. 一个新的 Flex 容器，专门用于对齐主游戏区、左侧信息栏和右侧调试菜单 -->
-      <div style="display: flex; align-items: flex-start; gap: 20px">
-        <!-- 左侧信息栏：包含 Next 图形和分数 -->
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <h2>Next</h2>
-          <canvas id="next-shape-canvas" width="140" height="140"></canvas>
+                <div id="score-display">
+                    <h3>分数</h3>
+                    <p id="score-value">0</p>
+                </div>
+            </div>
 
-          <div id="score-display">
-            <h3>分数</h3>
-            <p id="score-value">0</p>
-          </div>
+            <!-- 中间列：只包含主游戏画布 -->
+            <div>
+                <h1>Sand Tetris</h1>
+                <canvas id="game-canvas" width="350" height="700"></canvas>
+            </div>
+
+            <!-- 右侧调试菜单 -->
+            <div>
+                <div id="debug-menu">
+                    <h3>调试菜单</h3>
+                    <button id="reset-button">重置</button>
+                    <button id="clear-board-button">清除</button>
+                    <button id="hard-drop-button">下落</button>
+                    <h4>指定下一个图形</h4>
+                    <div id="shape-selector"></div>
+                </div>
+            </div>
         </div>
-
-        <!-- 中间列：只包含主游戏画布 -->
-        <div>
-          <canvas id="game-canvas" width="350" height="700"></canvas>
-        </div>
-
-        <!-- 右侧调试菜单 -->
-        <div>
-          <div id="debug-menu">
-            <h3>调试菜单</h3>
-            <button id="reset-button">重置</button>
-            <button id="clear-board-button">清除</button>
-            <button id="hard-drop-button">下落</button>
-            <h4>指定下一个图形</h4>
-            <div id="shape-selector"></div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>
     <style>
-      body {
-        background-color: #222;
-        color: #eee;
-        font-family: sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      h1,
-      h2,
-      h3,
-      h4 {
-        margin: 10px 0;
-      }
-      canvas {
-        border: 1px solid #eee;
-        background-color: #000;
-      }
-      #debug-menu {
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px dashed #555;
-        text-align: center;
-      }
-      #shape-selector button {
-        margin: 2px;
-        padding: 5px 10px;
-        font-family: monospace;
-      }
-      #score-display {
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px dashed #555;
-        width: 140px; /* 设置宽度与 Next 区域一致 */
-        height: 140px; /* 设置高度与 Next 区域一致 */
-        box-sizing: border-box; /* 确保 padding 和 border 不会增加总宽度 */
-        display: flex; /* 使用 Flexbox 布局 */
-        flex-direction: column; /* 垂直排列 */
-        justify-content: center; /* 垂直居中 */
-        align-items: center; /* 水平居中 */
-      }
-      #score-value {
-        font-size: 2em; /* 增大字体大小 */
-        font-weight: bold; /* 加粗 */
-        color: #7CFC00; /* 分数数值变为绿色 */
-      }
+        body {
+            background-color: #222;
+            color: #eee;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin: 10px 0;
+        }
+
+        canvas {
+            border: 1px solid #eee;
+            background-color: #000;
+        }
+
+        #debug-menu {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px dashed #555;
+            text-align: center;
+        }
+
+        #shape-selector button {
+            margin: 2px;
+            padding: 5px 10px;
+            font-family: monospace;
+        }
+
+        #score-display {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px dashed #555;
+            width: 140px;
+            /* 设置宽度与 Next 区域一致 */
+            height: 140px;
+            /* 设置高度与 Next 区域一致 */
+            box-sizing: border-box;
+            /* 确保 padding 和 border 不会增加总宽度 */
+            display: flex;
+            /* 使用 Flexbox 布局 */
+            flex-direction: column;
+            /* 垂直排列 */
+            justify-content: center;
+            /* 垂直居中 */
+            align-items: center;
+            /* 水平居中 */
+        }
+
+        #score-value {
+            font-size: 2em;
+            /* 增大字体大小 */
+            font-weight: bold;
+            /* 加粗 */
+            color: #7CFC00;
+            /* 分数数值变为绿色 */
+        }
     </style>
-  </body>
+</body>
+
 </html>
