@@ -1,4 +1,4 @@
-import { Board } from './core/Board';
+import { SandBoard } from './core/SandBoard';
 import { BOARD_HEIGHT, BOARD_WIDTH, SCALE_FACTOR } from './core/Config';
 import { Game } from './core/Game';
 import { Shape } from './core/Shape';
@@ -68,7 +68,7 @@ export class Renderer {
         );
     }
 
-    private drawBoard(board: Board): void {
+    private drawBoard(board: SandBoard): void {
         const grid = board.getGrid();
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {

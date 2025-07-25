@@ -2,7 +2,7 @@ import { BOARD_WIDTH, BOARD_HEIGHT } from './Config';
 
 export type Cell = string; // 用空字符串代表空格子，用颜色字符串代表有方块的格子
 
-export class Board {
+export class SandBoard {
     private grid: Cell[][];
 
     constructor() {
@@ -37,7 +37,7 @@ export class Board {
      * 对整个沙盘进行一轮物理计算，让所有可移动的沙粒移动一格
      * @returns 如果在这一轮计算中，有至少一个沙粒移动了，则返回 true，否则返回 false
      */
-    public updateSandStep(): boolean {
+    public updateStep(): boolean {
         let hasFallen = false;
         // 坚持“自底向上，自左向右”的扫描顺序
         for (let y = BOARD_HEIGHT - 2; y >= 0; y--) {
@@ -95,7 +95,7 @@ export class Board {
      * 核心消除逻辑："流沙"消除
      * @returns 本次消除的总沙粒数量
      */
-    public clearSand(): { x: number; y: number; color: string }[] {
+    public clear(): { x: number; y: number; color: string }[] {
         const visited = new Set<string>(); // 用于记录在本次消除中已经访问过的所有格子
         const clearedCells: { x: number; y: number; color: string }[] = [];
 
@@ -153,6 +153,7 @@ export class Board {
         }
         return clearedCells;
     }
+    
     private findConnectedGroup(
         startX: number,
         startY: number,

@@ -1,10 +1,10 @@
-import { Board } from './Board';
+import { SandBoard } from './SandBoard';
 import { ClearEffect } from '../Effect';
 import { Shape, ShapeType, SHAPES } from './Shape';
 import { NORMAL_DROP_INTERVAL, QUICK_DROP_INTERVAL, SAND_SETTLE_INTERVAL, BOARD_WIDTH } from './Config';
 
 export class Game {
-    private board: Board;
+    private board: SandBoard;
     public currentShape: Shape | null = null;
     public nextShape: Shape | null = null;
     public gameOver: boolean;
@@ -51,7 +51,7 @@ export class Game {
     }
 
     private initialize(): void {
-        this.board = new Board();
+        this.board = new SandBoard();
         this.gameOver = false;
         this.isSoftDropping = false;
         this.isSettling = false;
@@ -71,7 +71,7 @@ export class Game {
         return this.nextShape;
     }
 
-    public getBoard(): Board {
+    public getBoard(): SandBoard {
         return this.board;
     }
 
@@ -134,12 +134,12 @@ export class Game {
      */
     private settleSand(): void {
         // 1. 先让沙粒进行一轮物理运动
-        const hasMoved = this.board.updateSandStep();
+        const hasMoved = this.board.updateStep();
 
         // 2. 如果没有任何沙粒可以再移动了，说明沙盘“暂时稳定”了
         if (!hasMoved) {
             // 3. 在这个稳定状态下，检查是否可以消除
-            const clearedCells = this.board.clearSand();
+            const clearedCells = this.board.clear();
 
             // 4. 如果发生了消除
             if (clearedCells.length > 0) {
@@ -174,7 +174,7 @@ export class Game {
     }
 
     public clearBoard(): void {
-        this.board = new Board();
+        this.board = new SandBoard();
         this.currentShape = null;
         this.spawnShape();
     }
