@@ -17,7 +17,7 @@
                 <canvas id="next-shape-canvas" width="140" height="140"></canvas>
 
                 <div id="score-display">
-                    <h3>分数</h3>
+                    <h2>Score</h2>
                     <p id="score-value">0</p>
                 </div>
             </div>
@@ -31,11 +31,11 @@
             <!-- 右侧调试菜单 -->
             <div>
                 <div id="debug-menu">
-                    <h3>调试菜单</h3>
-                    <button id="reset-button">重置</button>
-                    <button id="clear-board-button">清除</button>
-                    <button id="hard-drop-button">下落</button>
-                    <h4>指定下一个图形</h4>
+                    <h2>Debug Menu</h2>
+                    <button id="reset-button">Reset</button>
+                    <button id="clear-board-button">Clear</button>
+                    <button id="hard-drop-button">Fall</button>
+                    <h3>Set the next shape</h3>
                     <div id="shape-selector"></div>
                 </div>
             </div>
@@ -82,22 +82,12 @@
 
         #score-display {
             margin-top: 20px;
-            padding: 10px;
             border: 1px dashed #555;
-            width: 140px;
             /* 设置宽度与 Next 区域一致 */
-            height: 140px;
+            width: 140px;
             /* 设置高度与 Next 区域一致 */
-            box-sizing: border-box;
-            /* 确保 padding 和 border 不会增加总宽度 */
-            display: flex;
-            /* 使用 Flexbox 布局 */
-            flex-direction: column;
-            /* 垂直排列 */
-            justify-content: center;
-            /* 垂直居中 */
-            align-items: center;
-            /* 水平居中 */
+            height: 140px;
+
         }
 
         #score-value {
