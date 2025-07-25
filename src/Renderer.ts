@@ -10,7 +10,7 @@ export class Renderer {
   private scoreValueElement: HTMLElement; // 新增：分数显示元素
   private cellSize: number; // 每个沙粒的像素尺寸
 
-  constructor(canvasId: string, nextShapeCanvasId: string) {
+  constructor(canvasId: string, nextShapeCanvasId: string, scoreValueElementId: string) {
     this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d')!;
 
@@ -19,7 +19,7 @@ export class Renderer {
     ) as HTMLCanvasElement;
     this.nextShapeContext = this.nextShapeCanvas.getContext('2d')!;
 
-    this.scoreValueElement = document.getElementById('score-value') as HTMLElement; // 获取分数显示元素
+    this.scoreValueElement = document.getElementById(scoreValueElementId) as HTMLElement; // 获取分数显示元素
 
     // 动态计算每个沙粒的尺寸，以适应画布大小
     this.cellSize = this.canvas.width / BOARD_WIDTH;
@@ -30,20 +30,19 @@ export class Renderer {
     currentShape: Shape | null,
     nextShape: Shape | null,
     gameOver: boolean,
-    score: number // 新增：接收分数
+    score: number // 接收分数
   ): void {
     this.clear();
     this.drawBoard(board);
     if (currentShape) {
       this.drawShape(currentShape, this.context);
     }
-    if (nextShape) {
-      this.drawNextShape(nextShape);
-    }
+    this.drawNextShape(nextShape); // 在独立的画布上绘制下一个图形
+    this.updateScoreDisplay(score); // 更新分数显示
+
     if (gameOver) {
       this.drawGameOver();
     }
-    this.updateScoreDisplay(score); // 更新分数显示
   }
 
   private clear(): void {
@@ -78,9 +77,10 @@ export class Renderer {
     }
   }
 
-  private drawNextShape(shape: Shape): void {
+  private drawNextShape(shape: Shape | null): void {
+    if (!shape) return;
+
     const { matrix, color } = shape;
-    // 假设 "Next" 画布最多显示 4x4 的基础方块, 放大后就是 4 * SCALE_FACTOR
     const nextCellSize = this.nextShapeCanvas.width / (4 * SCALE_FACTOR);
 
     const shapeWidth = matrix[0].length;
@@ -103,6 +103,12 @@ export class Renderer {
     }
   }
 
+  private updateScoreDisplay(score: number): void {
+    if (this.scoreValueElement) {
+      this.scoreValueElement.innerText = score.toString();
+    }
+  }
+
   private drawCell(
     x: number,
     y: number,
@@ -118,12 +124,6 @@ export class Renderer {
       cellSize + 1,
       cellSize + 1
     );
-  }
-
-  private updateScoreDisplay(score: number): void {
-    if (this.scoreValueElement) {
-      this.scoreValueElement.innerText = score.toString();
-    }
   }
 
   private drawGameOver(): void {

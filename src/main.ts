@@ -8,7 +8,7 @@ let renderer: Renderer;
 
 document.addEventListener('DOMContentLoaded', () => {
   game = new Game();
-  renderer = new Renderer('game-canvas', 'next-shape-canvas');
+  renderer = new Renderer('game-canvas', 'next-shape-canvas', 'score-value');
   new InputHandler(game);
   new DebugMenu(game);
 
