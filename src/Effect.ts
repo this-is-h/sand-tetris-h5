@@ -1,79 +1,47 @@
-import { CLEAR_ANIMATION_WHITE_DURATION, CLEAR_ANIMATION_FADE_DURATION } from './core/Config';
-import { BLOCKS, type BlockType } from './core/Block';
+import { CLEAR_ANIMATION_WHITE_DURATION } from './core/Config';
+import { type BlockType } from './core/Block';
 
 export class ClearEffect {
     x: number;
     y: number;
-    initialType: BlockType;
+    initialType: BlockType; // 保留，以防未来需要
     startTime: number;
 
-    constructor(x: number, y: number, type: BlockType) {
+    constructor(x: number, y: number, type: BlockType, currentTime: number) {
         this.x = x;
         this.y = y;
         this.initialType = type;
-        this.startTime = Date.now();
+        this.startTime = currentTime; // 使用传入的时间戳
     }
 
+    /**
+     * 更新动画状态。
+     * 动画只持续一个“闪白”阶段。
+     * @param currentTime 当前时间
+     * @returns 如果动画仍在进行中，返回 true，否则返回 false。
+     */
     public update(currentTime: number): boolean {
         const elapsedTime = currentTime - this.startTime;
-
-        // 动画第一阶段：变成纯白色
-        if (elapsedTime < CLEAR_ANIMATION_WHITE_DURATION) {
-            return true; // 动画进行中
-        }
-
-        // 动画第二阶段：渐变到透明并缩小
-        const fadeStartTime = this.startTime + CLEAR_ANIMATION_WHITE_DURATION;
-        const fadeElapsedTime = currentTime - fadeStartTime;
-
-        if (fadeElapsedTime < CLEAR_ANIMATION_FADE_DURATION) {
-            return true; // 动画进行中
-        }
-
-        return false; // 动画结束
+        // 动画只持续“闪白”的设定的时间
+        return elapsedTime < CLEAR_ANIMATION_WHITE_DURATION;
     }
 
+    /**
+     * 绘制效果。
+     * 在动画持续期间，只在指定位置绘制一个纯白色的方块。
+     * @param context Canvas 2D 上下文
+     * @param cellSize 格子大小
+     */
     public draw(
         context: CanvasRenderingContext2D,
-        cellSize: number,
-        currentTime: number
+        cellSize: number
     ): void {
-        const elapsedTime = currentTime - this.startTime;
-
-        if (elapsedTime < CLEAR_ANIMATION_WHITE_DURATION) {
-            // 第一阶段：纯白色
-            context.fillStyle = BLOCKS[this.initialType].color;
-            context.fillRect(
-                this.x * cellSize,
-                this.y * cellSize,
-                cellSize,
-                cellSize
-            );
-        } else {
-            // 第二阶段：渐变和缩小
-            const fadeStartTime =
-                this.startTime + CLEAR_ANIMATION_WHITE_DURATION;
-            const fadeElapsedTime = currentTime - fadeStartTime;
-            const progress = Math.min(
-                fadeElapsedTime / CLEAR_ANIMATION_FADE_DURATION,
-                1
-            );
-
-            // 透明度渐变
-            const alpha = 1 - progress;
-            context.fillStyle = `rgba(255, 255, 255, ${alpha})`; // 从白色渐变透明
-
-            // 大小缩放
-            const scale = 1 - progress;
-            const scaledSize = cellSize * scale;
-            const offset = (cellSize - scaledSize) / 2;
-
-            context.fillRect(
-                this.x * cellSize + offset,
-                this.y * cellSize + offset,
-                scaledSize,
-                scaledSize
-            );
-        }
+        context.fillStyle = 'white';
+        context.fillRect(
+            this.x * cellSize,
+            this.y * cellSize,
+            cellSize,
+            cellSize
+        );
     }
 }

@@ -34,7 +34,7 @@ export class Game {
         if (this.isSettling) {
             this.settleCounter += deltaTime;
             if (this.settleCounter > SAND_SETTLE_INTERVAL) {
-                this.settleSand();
+                this.settleSand(currentTime);
                 this.settleCounter = 0;
             }
         } else if (this.currentBlock) {
@@ -130,7 +130,7 @@ export class Game {
     /**
      * 结算沙盘的核心逻辑，支持“连击”
      */
-    private settleSand(): void {
+    private settleSand(currentTime: number): void {
         // 1. 先让沙粒进行一轮物理运动
         const hasMoved = this.board.updateStep();
 
@@ -144,7 +144,7 @@ export class Game {
                 this.score += clearedCells.length; // 累加分数
                 for (const cell of clearedCells) {
                     this.activeClearEffects.push(
-                        new ClearEffect(cell.x, cell.y, cell.type)
+                        new ClearEffect(cell.x, cell.y, cell.type, currentTime)
                     );
                 }
                 // 什么也不做，让下一次的 update() 循环自动地、再次地进入 settleSand 流程，
