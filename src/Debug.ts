@@ -1,5 +1,15 @@
 import { Game } from './core/Game';
-import { BLOCKS, type BlockType } from './core/Block';
+import { BLOCKS, BlockType } from './core/Block';
+
+export const BlockTypeName = {
+    [BlockType.I]: 'I',
+    [BlockType.L]: 'L',
+    [BlockType.J]: 'J',
+    [BlockType.S]: 'S',
+    [BlockType.Z]: 'Z',
+    [BlockType.T]: 'T',
+    [BlockType.O]: 'O',
+}
 
 export class DebugMenu {
     private game: Game;
@@ -47,7 +57,7 @@ export class DebugMenu {
 
         for (const type of blockTypes) {
             const button = document.createElement('button');
-            button.innerText = type;
+            button.innerText = BlockTypeName[type];
             button.addEventListener('click', () => {
                 this.game.setNextBlock(type);
             });

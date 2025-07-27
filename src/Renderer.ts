@@ -41,7 +41,7 @@ export class Renderer {
         currentTime: number // 新增：当前时间，用于动画
     ): void {
         this.clear();
-        this.drawBoard(game.getBoard());
+        this.drawBoard(game);
         if (currentBlock) {
             this.drawBlock(currentBlock, this.context);
         }
@@ -68,10 +68,18 @@ export class Renderer {
         );
     }
 
-    private drawBoard(board: Board): void {
+    private drawBoard(game: Game): void {
+        const board = game.getBoard();
         const grid = board.getGrid();
+        const activeEffects = game.getActiveClearEffects();
+
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
+                // 如果当前单元格正在进行消除动画，则跳过绘制
+                if (activeEffects.some(effect => effect.x === x && effect.y === y)) {
+                    continue;
+                }
+
                 const cellType = grid[y][x];
                 if (cellType !== "") {
                     this.drawCell(
