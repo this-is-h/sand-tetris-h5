@@ -58,8 +58,7 @@ export class Board {
                     continue; // 完成移动，处理下一个沙粒
                 }
 
-                // 决策 2 & 3：斜向滑动
-                // 根据您精确定义的规则，检查左右两个方向的可行性
+                // 决策 2 & 3：斜向滑动，检查左右两个方向的可行性
                 const canGoLeft =
                     this.isValidPosition(x - 1, y + 1) &&
                     this.getCell(x - 1, y + 1) === "";
@@ -68,20 +67,20 @@ export class Board {
                     this.getCell(x + 1, y + 1) === "" && // 右下方是空的
                     this.getCell(x + 1, y) === ""; // 且正右方也是空的
 
-                // 情况 B：如果左右两边都能滑动，随机选择一个方向
+                // 如果左右两边都能滑动，随机选择一个方向
                 if (canGoLeft && canGoRight) {
                     const direction = Math.random() < 0.5 ? -1 : 1; // -1 代表向左, 1 代表向右
                     this.setCell(x + direction, y + 1, cell as BlockType);
                     this.setCell(x, y, "");
                     hasFallen = true;
                 }
-                // 情况 A：如果只能向左滑动
+                // 如果只能向左滑动
                 else if (canGoLeft) {
                     this.setCell(x - 1, y + 1, cell as BlockType);
                     this.setCell(x, y, "");
                     hasFallen = true;
                 }
-                // 情况 A：如果只能向右滑动
+                // 如果只能向右滑动
                 else if (canGoRight) {
                     this.setCell(x + 1, y + 1, cell as BlockType);
                     this.setCell(x, y, "");
@@ -125,8 +124,7 @@ export class Board {
                                 cell.y ===
                                     Math.max(...group.cells.map((c) => c.y))
                         );
-                        //const isRightmostLower = group.cells.some(cell => cell.x === BOARD_WIDTH - 1 && cell.y === Math.max(...group.cells.map(c => c.y)));
-
+                        
                         let sortedCells = [...group.cells];
 
                         if (isLeftmostLower) {
