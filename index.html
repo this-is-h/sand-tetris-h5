@@ -31,6 +31,14 @@
 
             <!-- 右侧调试菜单 -->
             <div>
+                <div id="instructions">
+                    <h3>Guide</h3>
+                    <ul>
+                        <li><span>&uarr;</span> : Rotate</li>
+                        <li><span>&darr;</span> : Soft Drop</li>
+                        <li><span>&larr;</span> <span>&rarr;</span> : Move Left/Right</li>
+                    </ul>
+                </div>
                 <div id="debug-menu">
                     <h2>Debug Menu</h2>
                     <button id="reset-button">Reset</button>
@@ -69,6 +77,13 @@
         }
 
         #debug-menu {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px dashed #555;
+            text-align: center;
+        }
+
+        #instructions {
             margin-top: 20px;
             padding: 10px;
             border: 1px dashed #555;
