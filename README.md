@@ -10,7 +10,7 @@
 </center>
 
 --- 
-项目实现了核心算法的1:1实现，**做到和原版一模一样的流沙物理效果**
+**核心算法1:1还原，做到和原版一模一样的流沙物理效果**
 举例几个方块的下落堆积效果对比：
 #### 原版：
 ![I形](https://cdn.jsdelivr.net/gh/zhangyuantao/wechat-public-img/images/20250731112826398.png)
