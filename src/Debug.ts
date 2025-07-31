@@ -1,5 +1,5 @@
 import { Game } from './core/Game';
-import { BLOCKS, BlockType } from './core/Block';
+import { BLOCKS, BlockType, ColorHex, ColorType } from './core/Block';
 
 const BlockTypeName = {
     [BlockType.I]: 'I',
@@ -13,6 +13,7 @@ const BlockTypeName = {
 
 export class DebugMenu {
     private game: Game;
+    private selectedColor: ColorType = ColorType.c1;
 
     constructor(game: Game) {
         this.game = game;
@@ -20,6 +21,7 @@ export class DebugMenu {
         this.setupClearBoardButton();
         this.setupHardDropButton();
         this.setupBlockSelector();
+        this.setupColorSelector();
     }
 
     private setupResetButton(): void {
@@ -53,13 +55,31 @@ export class DebugMenu {
         const selectorContainer = document.getElementById('block-selector');
         if (!selectorContainer) return;
 
-        const blockTypes = Object.keys(BLOCKS) as BlockType[];
+        const blockTypes = Object.keys(BLOCKS) as any as BlockType[];
 
         for (const type of blockTypes) {
             const button = document.createElement('button');
             button.innerText = BlockTypeName[type];
             button.addEventListener('click', () => {
-                this.game.setNextBlock(type);
+                this.game.setNextBlock(type, this.selectedColor);
+            });
+            selectorContainer.appendChild(button);
+        }
+    }
+
+    private setupColorSelector(): void {
+        const selectorContainer = document.getElementById('color-selector');
+        if (!selectorContainer) return;
+
+        const colors = Object.keys(ColorHex) as ColorType[];
+
+        for (const color of colors) {
+            const button = document.createElement('button');
+            button.style.backgroundColor = ColorHex[color];
+            button.style.width = '20px';
+            button.style.height = '20px';
+            button.addEventListener('click', () => {
+                this.selectedColor = color;
             });
             selectorContainer.appendChild(button);
         }
