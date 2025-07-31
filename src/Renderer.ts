@@ -1,6 +1,7 @@
 import { Block, BLOCKS } from './core/Block';
-import { BOARD_HEIGHT, BOARD_WIDTH, SCALE_FACTOR } from './core/Config';
 import { Game } from './core/Game';
+import { BOARD_HEIGHT, BOARD_WIDTH, SCALE_FACTOR } from './core/Config';
+import { ClearEffect } from './Effect';
 
 export class Renderer {
     private canvas: HTMLCanvasElement;
@@ -36,20 +37,17 @@ export class Renderer {
         currentBlock: Block | null,
         nextBlock: Block | null,
         gameOver: boolean,
-        score: number // 接收分数
+        score: number,
+        activeClearEffects: ClearEffect[]
     ): void {
         this.clear();
         this.drawBoard(game);
         if (currentBlock) {
             this.drawBlock(currentBlock, this.context);
         }
+        this.drawClearEffects(activeClearEffects);
         this.drawNextBlock(nextBlock); // 在独立的画布上绘制下一个图形
         this.updateScoreDisplay(score); // 更新分数显示
-
-        // 绘制消除动画
-        for (const effect of game.getActiveClearEffects()) {
-            effect.draw(this.context, this.cellSize);
-        }
 
         if (gameOver) {
             this.drawGameOver();
@@ -164,5 +162,11 @@ export class Renderer {
             this.canvas.width / 2,
             this.canvas.height / 2 + 15
         );
+    }
+
+    private drawClearEffects(effects: ClearEffect[]): void {
+        for (const effect of effects) {
+            effect.draw(this.context, this.cellSize);
+        }
     }
 }

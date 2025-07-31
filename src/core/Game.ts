@@ -1,6 +1,5 @@
-import { ClearEffect } from '../Effect';
 import { Block, BLOCKS, BlockType } from './Block';
-import { Board } from './Board';
+import { Board, type ClearedCell } from './Board';
 import { BOARD_WIDTH, NORMAL_DROP_INTERVAL, QUICK_DROP_INTERVAL, SAND_SETTLE_INTERVAL } from './Config';
 
 export class Game {
@@ -12,7 +11,8 @@ export class Game {
     private isSettling: boolean; // 用于动画结算
     public score: number; // 新增：游戏分数
 
-    private activeClearEffects: ClearEffect[] = []; // TODO 消除效果实现比较临时，仅为了demo演示
+    // 消除事件回调，外部处理具体消除表现
+    public onClear: (clearedCells: ClearedCell[]) => void = () => {};
 
     // 计时器状态，从 main.ts 移入 Game 类
     private dropCounter: number;
@@ -77,8 +77,6 @@ export class Game {
      */
     public update(deltaTime: number, currentTime: number): void {
         if (this.gameOver) return;
-
-        this.updateClearEffects(currentTime);
 
         // 只在没有“硬操作”时，才处理动画结算和自动下落
         if (this.isSettling) {
@@ -171,11 +169,7 @@ export class Game {
                 //     );
                 // }
 
-                for (const cell of clearedCells) {
-                    this.activeClearEffects.push(
-                        new ClearEffect(cell.x, cell.y, cell.type, currentTime)
-                    );
-                }
+                this.onClear(clearedCells);
 
                 // 下一次的 update() 循环会再次地进入 settleSand 流程，
                 // 从而让上方的沙粒落入新的空隙中，形成“连击”效果。
@@ -313,23 +307,5 @@ export class Game {
      */
     public reset(): void {
         this.initialize();
-    }
-
-    /**
-     * 获取当前的消除效果列表
-     * @returns 当前活跃的消除效果
-     */
-    public getActiveClearEffects(): ClearEffect[] {
-        return this.activeClearEffects;
-    }
-
-    /**
-     * 更新消除效果的状态
-     * @param currentTime 当前时间戳
-     */
-    private updateClearEffects(currentTime: number): void {
-        this.activeClearEffects = this.activeClearEffects.filter((effect) =>
-            effect.update(currentTime)
-        );
     }
 }

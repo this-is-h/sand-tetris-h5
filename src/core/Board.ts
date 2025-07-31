@@ -1,7 +1,13 @@
-import { BOARD_WIDTH, BOARD_HEIGHT } from './Config';
 import type { BlockType } from './Block';
+import { BOARD_HEIGHT, BOARD_WIDTH } from './Config';
 
 export type Cell = BlockType | ""; // 用BlockType代表格子类型，""代表空格子
+
+export type ClearedCell = {
+    x: number;
+    y: number;
+    type: BlockType;
+};
 
 /**
  * 沙盘类（游戏算法核心）
@@ -46,7 +52,7 @@ export class Board {
      */
     public updateStep(): boolean {
         let moved = false;
-        
+
         // 坚持“自底向上，自左向右”的扫描顺序
         for (let y = BOARD_HEIGHT - 2; y >= 0; y--) { // 从倒数第二行开始，最后底下一行沙子无法“流动“”所以不需要处理
             for (let x = 0; x < BOARD_WIDTH; x++) {
@@ -102,7 +108,7 @@ export class Board {
      * 核心消除逻辑："流沙"消除
      * @returns 本次消除的沙粒集合
      */
-    public clear(): { x: number; y: number; type: BlockType }[] {
+    public clear(): ClearedCell[] {
         const visited = new Set<string>(); // 用于记录在本次消除中已经访问过的所有格子
 
         for (let y = 0; y < BOARD_HEIGHT; y++) {
@@ -117,7 +123,7 @@ export class Board {
 
                     // 如果这个团块同时接触到了左右两边的墙壁
                     if (group.touchesLeftWall && group.touchesRightWall) {
-                        const clearedCells: { x: number; y: number; type: BlockType }[] = [];
+                        const clearedCells: ClearedCell[] = [];
 
                         // 消除，格子置空
                         for (const { x, y } of group.cells) {
