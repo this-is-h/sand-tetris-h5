@@ -1,6 +1,9 @@
 import { CLEAR_ANIMATION_WHITE_DURATION } from './core/Config';
 import { type BlockType } from './core/Block';
 
+/**
+ * 消除效果在这个demo不是重点，随便的实现有得看就行
+ */
 export class ClearEffect {
     x: number;
     y: number;

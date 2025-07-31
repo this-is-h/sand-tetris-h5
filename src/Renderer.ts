@@ -1,7 +1,6 @@
-import { Board } from './core/Board';
+import { Block, BLOCKS } from './core/Block';
 import { BOARD_HEIGHT, BOARD_WIDTH, SCALE_FACTOR } from './core/Config';
 import { Game } from './core/Game';
-import { BLOCKS, BlockType, Block } from './core/Block';
 
 export class Renderer {
     private canvas: HTMLCanvasElement;
@@ -37,8 +36,7 @@ export class Renderer {
         currentBlock: Block | null,
         nextBlock: Block | null,
         gameOver: boolean,
-        score: number, // 接收分数
-        currentTime: number // 新增：当前时间，用于动画
+        score: number // 接收分数
     ): void {
         this.clear();
         this.drawBoard(game);
@@ -60,12 +58,7 @@ export class Renderer {
 
     private clear(): void {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.nextBlockContext.clearRect(
-            0,
-            0,
-            this.nextBlockCanvas.width,
-            this.nextBlockCanvas.height
-        );
+        this.nextBlockContext.clearRect(0, 0, this.nextBlockCanvas.width, this.nextBlockCanvas.height);
     }
 
     private drawBoard(game: Game): void {
@@ -110,15 +103,12 @@ export class Renderer {
 
         const { matrix, type } = block;
         const maxCellSize = 4; // 最大就是4格（I形）
-        const nextCellSize =
-            this.nextBlockCanvas.width / (maxCellSize * SCALE_FACTOR) / 1.5; // 1.5倍缩小
+        const nextCellSize = this.nextBlockCanvas.width / (maxCellSize * SCALE_FACTOR) / 1.5; // 1.5倍缩小
 
         const blockWidth = matrix[0].length;
         const blockHeight = matrix.length;
-        const offsetX =
-            (this.nextBlockCanvas.width - blockWidth * nextCellSize) / 2;
-        const offsetY =
-            (this.nextBlockCanvas.height - blockHeight * nextCellSize) / 2;
+        const offsetX = (this.nextBlockCanvas.width - blockWidth * nextCellSize) / 2;
+        const offsetY = (this.nextBlockCanvas.height - blockHeight * nextCellSize) / 2;
 
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {

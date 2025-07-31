@@ -1,8 +1,14 @@
 import { BOARD_WIDTH, BOARD_HEIGHT } from './Config';
 import type { BlockType } from './Block';
 
-export type Cell = BlockType | ""; // 用BlockType代表格子类型
+export type Cell = BlockType | ""; // 用BlockType代表格子类型，""代表空格子
 
+/**
+ * 沙盘类（游戏算法核心）
+ * 用于管理游戏中的沙盘格子状态
+ * 包含格子的二维数组，提供设置和获取格子的方法
+ * 以及更新沙盘状态的方法
+ */
 export class Board {
     private grid: Cell[][];
 
@@ -39,9 +45,10 @@ export class Board {
      * @returns 如果在这一轮计算中，有至少一个沙粒移动了，则返回 true，否则返回 false
      */
     public updateStep(): boolean {
-        let hasFallen = false;
+        let moved = false;
+        
         // 坚持“自底向上，自左向右”的扫描顺序
-        for (let y = BOARD_HEIGHT - 2; y >= 0; y--) {
+        for (let y = BOARD_HEIGHT - 2; y >= 0; y--) { // 从倒数第二行开始，最后底下一行沙子无法“流动“”所以不需要处理
             for (let x = 0; x < BOARD_WIDTH; x++) {
                 const cell = this.getCell(x, y);
                 if (cell === "" || cell === undefined) {
@@ -54,50 +61,49 @@ export class Board {
                 if (this.getCell(x, y + 1) === "") {
                     this.setCell(x, y + 1, cell as BlockType);
                     this.setCell(x, y, "");
-                    hasFallen = true;
+                    moved = true;
                     continue; // 完成移动，处理下一个沙粒
                 }
 
-                // 决策 2 & 3：斜向滑动，检查左右两个方向的可行性
+                // 决策 2 & 3：斜向滑动，检查左下右下两个方向的可行性
                 const canGoLeft =
                     this.isValidPosition(x - 1, y + 1) &&
                     this.getCell(x - 1, y + 1) === "";
                 const canGoRight =
                     this.isValidPosition(x + 1, y + 1) &&
                     this.getCell(x + 1, y + 1) === "" && // 右下方是空的
-                    this.getCell(x + 1, y) === ""; // 且正右方也是空的
+                    this.getCell(x + 1, y) === ""; // 且正右方也是空的 （关键细节，防止穿墙）
 
-                // 如果左右两边都能滑动，随机选择一个方向
+                // 如果左下右下两边都能滑动，随机选择一个方向
                 if (canGoLeft && canGoRight) {
                     const direction = Math.random() < 0.5 ? -1 : 1; // -1 代表向左, 1 代表向右
                     this.setCell(x + direction, y + 1, cell as BlockType);
                     this.setCell(x, y, "");
-                    hasFallen = true;
+                    moved = true;
                 }
-                // 如果只能向左滑动
+                // 如果只能向左下滑动
                 else if (canGoLeft) {
                     this.setCell(x - 1, y + 1, cell as BlockType);
                     this.setCell(x, y, "");
-                    hasFallen = true;
+                    moved = true;
                 }
-                // 如果只能向右滑动
+                // 如果只能向右下滑动
                 else if (canGoRight) {
                     this.setCell(x + 1, y + 1, cell as BlockType);
                     this.setCell(x, y, "");
-                    hasFallen = true;
+                    moved = true;
                 }
             }
         }
-        return hasFallen;
+        return moved;
     }
 
     /**
      * 核心消除逻辑："流沙"消除
-     * @returns 本次消除的总沙粒数量
+     * @returns 本次消除的沙粒集合
      */
-    public clearSand(): { x: number; y: number; type: BlockType }[] {
+    public clear(): { x: number; y: number; type: BlockType }[] {
         const visited = new Set<string>(); // 用于记录在本次消除中已经访问过的所有格子
-        const clearedCells: { x: number; y: number; type: BlockType }[] = [];
 
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
@@ -107,58 +113,35 @@ export class Board {
                 // 如果这个格子有颜色，并且我们还没有检查过它
                 if (cellType !== "" && cellType !== undefined && !visited.has(key)) {
                     // 就从这个格子开始，寻找所有和它相连的、同色的格子组成的团块
-                    const group = this.findConnectedGroup(
-                        x,
-                        y,
-                        cellType,
-                        visited
-                    );
+                    const group = this.findConnectedGroup(x, y, cellType, visited);
 
                     // 如果这个团块同时接触到了左右两边的墙壁
                     if (group.touchesLeftWall && group.touchesRightWall) {
-                        // 确定遍历方向
-                        // 可消除方块集合的遍历顺序：1.自底向上 2.如果最低的方块在左侧则从左到右遍历，如果最低的方块在右侧则从右往左遍历
-                        const isLeftmostLower = group.cells.some(
-                            (cell) =>
-                                cell.x === 0 &&
-                                cell.y ===
-                                    Math.max(...group.cells.map((c) => c.y))
-                        );
-                        
-                        let sortedCells = [...group.cells];
+                        const clearedCells: { x: number; y: number; type: BlockType }[] = [];
 
-                        if (isLeftmostLower) {
-                            // 从左到右，自底向上
-                            sortedCells.sort((a, b) =>
-                                a.y === b.y ? a.x - b.x : b.y - a.y
-                            );
-                        } else {
-                            // 从右到左，自底向上
-                            sortedCells.sort((a, b) =>
-                                a.y === b.y ? b.x - a.x : b.y - a.y
-                            );
-                        }
-
-                        for (const { x, y } of sortedCells) {
+                        // 消除，格子置空
+                        for (const { x, y } of group.cells) {
                             const type = this.getCell(x, y);
                             if (type !== "" && type !== undefined) {
-                                clearedCells.push({ x, y, type: type as BlockType });
                                 this.setCell(x, y, "");
+                                clearedCells.push({ x, y, type: type as BlockType });
                             }
                         }
+
+                        return clearedCells;
                     }
                 }
             }
         }
-        return clearedCells;
+        return [];
     }
-    
-    private findConnectedGroup(
-        startX: number,
-        startY: number,
-        type: BlockType,
-        visited: Set<string>
-    ) {
+
+    // 查找所有相连的同色格子
+    // 使用广度优先搜索（BFS）算法
+    // 返回一个包含所有相连格子的集合
+    // 以及是否接触到左右两边墙壁的标志
+    // 注意：这个方法会修改 visited 集合，标记已经访问过的格子以避免重复检查
+    private findConnectedGroup(startX: number, startY: number, type: BlockType, visited: Set<string>) {
         const group = {
             cells: [] as { x: number; y: number }[],
             touchesLeftWall: false,

@@ -27,8 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             game.currentBlock,
             game.getNextBlock(),
             game.gameOver,
-            game.score,
-            timestamp
+            game.score
         );
 
         requestAnimationFrame(gameLoop);

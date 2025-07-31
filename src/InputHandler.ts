@@ -1,5 +1,4 @@
 import { Game } from './core/Game';
-import { ROTATE_COOLDOWN } from './core/Config';
 
 export class InputHandler {
     private game: Game;

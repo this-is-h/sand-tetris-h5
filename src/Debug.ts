@@ -1,7 +1,7 @@
 import { Game } from './core/Game';
 import { BLOCKS, BlockType } from './core/Block';
 
-export const BlockTypeName = {
+const BlockTypeName = {
     [BlockType.I]: 'I',
     [BlockType.L]: 'L',
     [BlockType.J]: 'J',
