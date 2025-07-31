@@ -1,6 +1,6 @@
-import { Block, BLOCKS } from './core/Block';
-import { Game } from './core/Game';
+import { Block, ColorHex } from './core/Block';
 import { BOARD_HEIGHT, BOARD_WIDTH, SCALE_FACTOR } from './core/Config';
+import { Game } from './core/Game';
 import { ClearEffect } from './Effect';
 
 export class Renderer {
@@ -65,12 +65,14 @@ export class Renderer {
 
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
-                const cellType = grid[y][x];
-                if (cellType !== "") {
+                const cellInfo = grid[y][x];
+                if (cellInfo !== "") {
+                    let colorType = board.getCellColor(x, y);
+                    let color = ColorHex[colorType];
                     this.drawCell(
                         x,
                         y,
-                        BLOCKS[cellType].color,
+                        color,
                         this.context,
                         this.cellSize
                     );
@@ -80,14 +82,14 @@ export class Renderer {
     }
 
     private drawBlock(block: Block, context: CanvasRenderingContext2D): void {
-        const { x, y, matrix, type } = block;
+        const { x, y, matrix, color } = block;
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col]) {
                     this.drawCell(
                         x + col,
                         y + row,
-                        BLOCKS[type].color,
+                        ColorHex[color],
                         context,
                         this.cellSize
                     );
@@ -99,7 +101,7 @@ export class Renderer {
     private drawNextBlock(block: Block | null): void {
         if (!block) return;
 
-        const { matrix, type } = block;
+        const { matrix, color } = block;
         const maxCellSize = 4; // 最大就是4格（I形）
         const nextCellSize = this.nextBlockCanvas.width / (maxCellSize * SCALE_FACTOR) / 1.5; // 1.5倍缩小
 
@@ -114,7 +116,7 @@ export class Renderer {
                     this.drawCell(
                         offsetX / nextCellSize + col,
                         offsetY / nextCellSize + row,
-                        BLOCKS[type].color,
+                        ColorHex[color],
                         this.nextBlockContext,
                         nextCellSize
                     );

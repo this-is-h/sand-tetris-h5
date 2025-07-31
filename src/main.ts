@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentTime = performance.now();
         for (const cell of clearedCells) {
             activeClearEffects.push(
-                new ClearEffect(cell.x, cell.y, cell.type, currentTime)
+                new ClearEffect(cell.x, cell.y, currentTime)
             );
         }
     };

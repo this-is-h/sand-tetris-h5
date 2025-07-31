@@ -1,4 +1,4 @@
-import { Block, BLOCKS, BlockType } from './Block';
+import { Block, BLOCKS, BlockType, ColorHex, ColorType } from './Block';
 import { Board, type ClearedCell } from './Board';
 import { BOARD_WIDTH, NORMAL_DROP_INTERVAL, QUICK_DROP_INTERVAL, SAND_SETTLE_INTERVAL } from './Config';
 
@@ -12,7 +12,7 @@ export class Game {
     public score: number; // 新增：游戏分数
 
     // 消除事件回调，外部处理具体消除表现
-    public onClear: (clearedCells: ClearedCell[]) => void = () => {};
+    public onClear: (clearedCells: ClearedCell[]) => void = () => { };
 
     // 计时器状态，从 main.ts 移入 Game 类
     private dropCounter: number;
@@ -32,10 +32,16 @@ export class Game {
         this.settleCounter = 0;
         this.score = 0; // 初始化分数
 
-        const blockTypes = Object.keys(BLOCKS) as BlockType[];
-        const firstType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-        this.nextBlock = new Block(firstType);
+        this.nextBlock = this.createBlock();
         this.spawnBlock();
+    }
+
+    private createBlock(type?: BlockType, color?: ColorType): Block {
+        const blockTypes = Object.keys(BLOCKS) as any as BlockType[];
+        const randType = type || blockTypes[Math.floor(Math.random() * blockTypes.length)];
+        const colors = Object.keys(ColorHex) as ColorType[];
+        const randomColor = color || colors[Math.floor(Math.random() * colors.length)]; // 随机选择一个颜色作为下一个方块的颜色
+        return new Block(randType, randomColor);
     }
 
     private spawnBlock(): void {
@@ -58,9 +64,11 @@ export class Game {
             return;
         }
 
-        const blockTypes = Object.keys(BLOCKS) as BlockType[];
+        const blockTypes = Object.keys(BLOCKS) as any as BlockType[];
         const randomType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-        this.nextBlock = new Block(randomType);
+        const colors = Object.keys(ColorHex) as ColorType[];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        this.nextBlock = new Block(randomType, randomColor);
     }
 
     public getNextBlock(): Block | null {
@@ -116,11 +124,11 @@ export class Game {
      */
     private lockBlock(): void {
         if (!this.currentBlock) return;
-        const { x, y, matrix, type } = this.currentBlock;
+        const { x, y, matrix, color } = this.currentBlock;
         for (let row = 0; row < matrix.length; row++) {
             for (let col = 0; col < matrix[row].length; col++) {
                 if (matrix[row][col]) {
-                    this.board.setCell(x + col, y + row, type);
+                    this.board.setCell(x + col, y + row, color);
                 }
             }
         }
@@ -297,8 +305,8 @@ export class Game {
      * 设置下一个方块的类型
      * @param type 下一个方块的类型
      */
-    public setNextBlock(type: BlockType): void {
-        this.nextBlock = new Block(type);
+    public setNextBlock(type: BlockType, color: ColorType): void {
+        this.nextBlock = this.createBlock(type, color);
     }
 
     /**

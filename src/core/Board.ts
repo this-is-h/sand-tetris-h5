@@ -1,12 +1,12 @@
-import type { BlockType } from './Block';
+import type { ColorType } from './Block';
 import { BOARD_HEIGHT, BOARD_WIDTH } from './Config';
 
-export type Cell = BlockType | ""; // 用BlockType代表格子类型，""代表空格子
+export type Cell = string; // ""代表空格子 1_x：1 代表颜色 x 代表其他扩展属性
 
 export type ClearedCell = {
     x: number;
     y: number;
-    type: BlockType;
+    cell: Cell;
 };
 
 /**
@@ -38,8 +38,13 @@ export class Board {
         }
     }
 
-    public getCell(x: number, y: number): Cell | undefined {
+    public getCell(x: number, y: number): Cell {
         return this.grid[y]?.[x];
+    }
+
+    public getCellColor(x: number, y: number): ColorType {
+        const cell = this.getCell(x, y);
+        return cell.split('_')[0] as ColorType;
     }
 
     private isValidPosition(x: number, y: number): boolean {
@@ -56,8 +61,8 @@ export class Board {
         // 坚持“自底向上，自左向右”的扫描顺序
         for (let y = BOARD_HEIGHT - 2; y >= 0; y--) { // 从倒数第二行开始，最后底下一行沙子无法“流动“”所以不需要处理
             for (let x = 0; x < BOARD_WIDTH; x++) {
-                const cell = this.getCell(x, y);
-                if (cell === "" || cell === undefined) {
+                const cellInfo = this.getCell(x, y);
+                if (!cellInfo) {
                     continue; // 当前格子是空的，跳过
                 }
 
@@ -65,7 +70,7 @@ export class Board {
 
                 // 决策 1：垂直下落 (最高优先级)
                 if (this.getCell(x, y + 1) === "") {
-                    this.setCell(x, y + 1, cell as BlockType);
+                    this.setCell(x, y + 1, cellInfo);
                     this.setCell(x, y, "");
                     moved = true;
                     continue; // 完成移动，处理下一个沙粒
@@ -83,19 +88,19 @@ export class Board {
                 // 如果左下右下两边都能滑动，随机选择一个方向
                 if (canGoLeft && canGoRight) {
                     const direction = Math.random() < 0.5 ? -1 : 1; // -1 代表向左, 1 代表向右
-                    this.setCell(x + direction, y + 1, cell as BlockType);
+                    this.setCell(x + direction, y + 1, cellInfo);
                     this.setCell(x, y, "");
                     moved = true;
                 }
                 // 如果只能向左下滑动
                 else if (canGoLeft) {
-                    this.setCell(x - 1, y + 1, cell as BlockType);
+                    this.setCell(x - 1, y + 1, cellInfo);
                     this.setCell(x, y, "");
                     moved = true;
                 }
                 // 如果只能向右下滑动
                 else if (canGoRight) {
-                    this.setCell(x + 1, y + 1, cell as BlockType);
+                    this.setCell(x + 1, y + 1, cellInfo);
                     this.setCell(x, y, "");
                     moved = true;
                 }
@@ -113,13 +118,14 @@ export class Board {
 
         for (let y = 0; y < BOARD_HEIGHT; y++) {
             for (let x = 0; x < BOARD_WIDTH; x++) {
-                const cellType = this.getCell(x, y);
+                const cellInfo = this.getCell(x, y);
                 const key = `${x},${y}`;
-
+                
                 // 如果这个格子有颜色，并且我们还没有检查过它
-                if (cellType !== "" && cellType !== undefined && !visited.has(key)) {
+                if (cellInfo !== "" && cellInfo !== undefined && !visited.has(key)) {
                     // 就从这个格子开始，寻找所有和它相连的、同色的格子组成的团块
-                    const group = this.findConnectedGroup(x, y, cellType, visited);
+                    const cellColor = this.getCellColor(x, y);
+                    const group = this.findConnectedGroup(x, y, cellColor, visited);
 
                     // 如果这个团块同时接触到了左右两边的墙壁
                     if (group.touchesLeftWall && group.touchesRightWall) {
@@ -127,10 +133,10 @@ export class Board {
 
                         // 消除，格子置空
                         for (const { x, y } of group.cells) {
-                            const type = this.getCell(x, y);
-                            if (type !== "" && type !== undefined) {
+                            const cell = this.getCell(x, y);
+                            if (cell !== "" && cell !== undefined) {
                                 this.setCell(x, y, "");
-                                clearedCells.push({ x, y, type: type as BlockType });
+                                clearedCells.push({ x, y, cell });
                             }
                         }
 
@@ -147,7 +153,7 @@ export class Board {
     // 返回一个包含所有相连格子的集合
     // 以及是否接触到左右两边墙壁的标志
     // 注意：这个方法会修改 visited 集合，标记已经访问过的格子以避免重复检查
-    private findConnectedGroup(startX: number, startY: number, type: BlockType, visited: Set<string>) {
+    private findConnectedGroup(startX: number, startY: number, color: ColorType, visited: Set<string>) {
         const group = {
             cells: [] as { x: number; y: number }[],
             touchesLeftWall: false,
@@ -180,7 +186,7 @@ export class Board {
                     // 检查邻居格子是否有效、同色，并且之前没有访问过
                     if (
                         this.isValidPosition(newX, newY) &&
-                        this.getCell(newX, newY) === (type as BlockType) &&
+                        this.getCellColor(newX, newY) === color &&
                         !visited.has(newKey)
                     ) {
                         visited.add(newKey); // 标记为已访问

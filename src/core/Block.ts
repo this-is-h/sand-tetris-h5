@@ -2,72 +2,77 @@ import { SCALE_FACTOR } from './Config';
 
 /**
  * 方块类型枚举
- * 使用字符串为了便于扩展单个格子数据，比如：1_x_y，x和y可以表示方块的其他属性
  */
 export const enum BlockType {
-    I = '1',
-    L = '2',
-    J = '3',
-    S = '4',
-    Z = '5',
-    T = '6',
-    O = '7',
+    I = 1,
+    L = 2,
+    J = 3,
+    S = 4,
+    Z = 5,
+    T = 6,
+    O = 7,
+}
+
+/**
+ * 定义颜色类型枚举
+ * 使用字符串为了便于扩展单个格子数据，比如：1_x_y，x和y可以表示方块的其他属性
+ */
+export const enum ColorType {
+    c1 = "1",
+    c2 = "2",
+    c3 = "3",
+    c4 = "4",
+    c5 = "5",
+    c6 = "6",
+    c7 = "7",
+}
+
+// 定义沙盘格子的颜色值
+export const ColorHex = {
+    [ColorType.c1]: '#40E0D0',
+    [ColorType.c2]: '#E69138',
+    [ColorType.c3]: '#6495ED',
+    [ColorType.c4]: '#98FB98',
+    [ColorType.c5]: '#FF6B6B',
+    [ColorType.c6]: '#BA55D3',
+    [ColorType.c7]: '#F0E68C',
 }
 
 // 定义方块信息
-export interface IBlockInfo {
-    matrix: number[][]; // 形状矩阵
-    color: string; // 颜色
-}
+export type IBlockInfo = number[][]; // 形状矩阵
 
-// 配置所有方块信息
+// 配置所有方块矩阵信息
 export const BLOCKS: { [key in BlockType]: IBlockInfo } = {
-    [BlockType.I]: {
-        matrix: [[1, 1, 1, 1]],
-        color: '#40E0D0'
-    },
-    [BlockType.L]: {
-        matrix: [
-            [0, 0, 1],
-            [1, 1, 1],
+    [BlockType.I]:
+        [
+            [1, 1, 1, 1]
         ],
-        color: '#E69138'
-    },
-    [BlockType.J]: {
-        matrix: [
+    [BlockType.L]:
+        [
+            [0, 0, 1],
+            [1, 1, 1]
+        ],
+    [BlockType.J]:
+        [
             [1, 0, 0],
             [1, 1, 1],
         ],
-        color: '#6495ED'
-    },
-    [BlockType.S]: {
-        matrix: [
-            [0, 1, 1],
-            [1, 1, 0],
-        ],
-        color: '#98FB98'
-    },
-    [BlockType.Z]: {
-        matrix: [
-            [1, 1, 0],
-            [0, 1, 1],
-        ],
-        color: '#FF6B6B'
-    },
-    [BlockType.T]: {
-        matrix: [
-            [0, 1, 0],
-            [1, 1, 1],
-        ],
-        color: '#BA55D3'
-    },
-    [BlockType.O]: {
-        matrix: [
-            [1, 1],
-            [1, 1],
-        ],
-        color: '#F0E68C'
-    },
+    [BlockType.S]: [
+        [0, 1, 1],
+        [1, 1, 0],
+    ],
+    [BlockType.Z]: [
+        [1, 1, 0],
+        [0, 1, 1],
+    ],
+    [BlockType.T]: [
+        [0, 1, 0],
+        [1, 1, 1],
+    ],
+    [BlockType.O]: [
+        [1, 1],
+        [1, 1],
+    ]
 };
 
 /**
@@ -82,13 +87,15 @@ export class Block {
     public y: number;
     public matrix: number[][];
     public type: BlockType;
+    public color: ColorType;
 
-    constructor(type: BlockType) {
+    constructor(type: BlockType, color: ColorType) {
         const block: IBlockInfo = BLOCKS[type];
         this.x = 0;
         this.y = 0;
-        this.matrix = this.createScaledMatrix(block.matrix);
+        this.matrix = this.createScaledMatrix(block);
         this.type = type;
+        this.color = color;
     }
 
     /**

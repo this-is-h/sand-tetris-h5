@@ -7,13 +7,11 @@ import { type BlockType } from './core/Block';
 export class ClearEffect {
     x: number;
     y: number;
-    initialType: BlockType; // 保留，以防未来需要
     startTime: number;
 
-    constructor(x: number, y: number, type: BlockType, currentTime: number) {
+    constructor(x: number, y: number, currentTime: number) {
         this.x = x;
         this.y = y;
-        this.initialType = type;
         this.startTime = currentTime; // 使用传入的时间戳
     }
 
