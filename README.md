@@ -49,3 +49,6 @@ npm run build
 >主要用于学习和研究用途，🫡致敬原版：<center>
     <img src="https://cdn.jsdelivr.net/gh/zhangyuantao/wechat-public-img/images/1B1Be0MDb-_3iXVso7yrqWK4WTSnL-NB1r7kxhDKguWsnADQfjW3fKxcAAT9DpTabaQ=w240-h480-rw.webp" style="width: 100px;  border-radius: 20px;">
 </center>
+
+---
+[🐙Github地址](https://github.com/ask-tao/sand-tetris-h5)
