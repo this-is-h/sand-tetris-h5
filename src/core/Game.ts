@@ -83,14 +83,14 @@ export class Game {
      * 游戏的主更新函数，由 main.ts 在每一帧调用
      * @param deltaTime 距离上一帧的时间差
      */
-    public update(deltaTime: number, currentTime: number): void {
+    public update(deltaTime: number): void {
         if (this.gameOver) return;
 
         // 只在没有“硬操作”时，才处理动画结算和自动下落
         if (this.isSettling) {
             this.settleCounter += deltaTime;
             if (this.settleCounter > SAND_SETTLE_INTERVAL) {
-                this.settleSand(currentTime);
+                this.settleSand();
                 this.settleCounter = 0;
             }
         } else if (this.currentBlock) {
@@ -141,7 +141,7 @@ export class Game {
     /**
      * 结算沙盘的核心逻辑，支持“连击”
      */
-    private settleSand(currentTime: number): void {
+    private settleSand(): void {
         // 1. 先让沙粒进行一轮物理运动
         const hasMoved = this.board.updateStep();
 

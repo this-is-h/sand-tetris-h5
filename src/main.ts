@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lastTime = timestamp;
 
         // 1. 更新游戏世界的所有状态
-        game.update(deltaTime, timestamp);
+        game.update(deltaTime);
         activeClearEffects = activeClearEffects.filter((effect) =>
             effect.update(timestamp)
         );
