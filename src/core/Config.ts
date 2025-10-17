@@ -48,3 +48,18 @@ export const CLEAR_ANIMATION_FADE_DURATION = 200;
  * 旋转操作的冷却时间（单位：毫秒），防止长按连续旋转
  */
 export const ROTATE_COOLDOWN = 200;
+
+/**
+ * 移动端左右移动的基础连发间隔（毫秒）
+ */
+export const MOVE_REPEAT_INTERVAL_MS = 90;
+
+/**
+ * 移动端左右移动的加速后连发间隔（毫秒）
+ */
+export const MOVE_REPEAT_ACCEL_MS = 60;
+
+/**
+ * 触控按住多久后进入加速（毫秒）
+ */
+export const MOVE_ACCEL_DELAY_MS = 400;

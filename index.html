@@ -4,13 +4,15 @@
 <head>
     <meta charset="UTF-8" />
     <title>Sand Tetris</title>
+    <!-- 移动端适配视口设置 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </head>
 
 <body>
     <!-- 游戏总容器 -->
     <div style="text-align: center">
-        <!-- 一个新的 Flex 容器，专门用于对齐主游戏区、左侧信息栏和右侧调试菜单 -->
-        <div style="display: flex; align-items: flex-start; gap: 20px">
+        <!-- 主布局容器：PC 端为三列，移动端通过 CSS 重排为纵向 -->
+        <div id="layout" style="display: flex; align-items: flex-start; gap: 20px">
             <!-- 左侧信息栏：包含 Next 图形和分数 -->
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <h2>Next</h2>
@@ -27,6 +29,16 @@
                 <h1>Sand Tetris</h1>
                 <!-- 注意：height=width/游戏逻辑宽度*游戏逻辑高度 -->
                 <canvas id="game-canvas" width="400" height="600"></canvas>
+                
+                <!-- 移动端触控控制条（PC 端隐藏，移动端显示） -->
+                <div id="mobile-controls" aria-label="Mobile Controls">
+                    <div class="controls-grid">
+                        <button id="btn-left" class="control-btn" aria-label="Left">⬅️</button>
+                        <button id="btn-rotate" class="control-btn primary" aria-label="Rotate">⤾</button>
+                        <button id="btn-right" class="control-btn" aria-label="Right">➡️</button>
+                        <button id="btn-down" class="control-btn wide" aria-label="Soft Drop">⬇️ Soft Drop</button>
+                    </div>
+                </div>
             </div>
 
             <!-- 右侧调试菜单 -->
@@ -63,6 +75,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            width: 100vw;
             margin: 0;
         }
 
@@ -76,6 +89,7 @@
         canvas {
             border: 1px solid #eee;
             background-color: #000;
+            /* 默认 PC 端保持固定像素尺寸，移动端通过 media query 缩放 */
         }
 
         #debug-menu {
@@ -115,6 +129,183 @@
             /* 加粗 */
             color: #7CFC00;
             /* 分数数值变为绿色 */
+        }
+
+        /* 移动端触控控制样式（默认隐藏） */
+        #mobile-controls {
+            display: none;
+        }
+
+        /* 响应式：移动端适配 */
+        @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+            html, body {
+                height: 100vh;
+                width: 100vw;
+                overflow: hidden; /* 完全禁止滚动 */
+                padding: 0;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            body > div {
+                height: 100vh;
+                width: 100vw;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                box-sizing: border-box;
+                padding: 8px;
+            }
+
+            /* 纵向排布三列区域，居中对齐 */
+            #layout {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 8px !important;
+                width: 100%;
+                max-width: 500px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                flex: 1;
+            }
+
+            /* 顶部区域：Next 和 Score 横向排列以节省垂直空间 */
+            #layout > div:first-child {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 8px;
+                margin-bottom: 0;
+                margin-top: 0;
+            }
+
+            /* 隐藏标题，节省空间 */
+            h1, h2, h3 {
+                margin: 2px 0 !important;
+                font-size: 0.9rem;
+            }
+            
+            /* 中间容器样式调整 */
+            #layout > div:nth-child(2) {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                margin: 0;
+            }
+
+            /* 缩放主游戏画布以适配屏幕，作为主体内容，考虑高度限制 */
+            #game-canvas {
+                /* 更严格的高度限制，确保内容不会超出屏幕 */
+                height: calc(100vh - 300px); /* 增加顶部和底部元素的预留空间 */
+                touch-action: none; /* 防止触发页面滚动/缩放 */
+                flex-shrink: 0;
+            }
+
+            /* Next 与 Score 进一步缩小 */
+            #next-block-canvas {
+                width: min(20vw, 80px);
+                height: auto;
+                aspect-ratio: 1 / 1;
+            }
+
+            #score-display {
+                width: min(20vw, 80px);
+                height: auto;
+                aspect-ratio: 1 / 1; /* 与 Next 保持一致的正方形 */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin-top: 0 !important;
+                padding: 4px;
+            }
+
+            #score-value {
+                font-size: 1.2em !important;
+            }
+
+            /* 隐藏调试菜单和说明，避免占位 */
+            #debug-menu, #instructions {
+                display: none !important;
+            }
+
+            /* 显示触控控制条，作为布局的一部分 */
+            #mobile-controls {
+                display: block;
+                width: min(96vw, 380px);
+                margin-top: 8px;
+                margin-bottom: 4px;
+                align-self: center;
+            }
+            
+            .controls-grid {
+                gap: 6px !important;
+            }
+            
+            .control-btn {
+                padding: 10px 12px !important;
+                font-size: 16px !important;
+            }
+            
+            .control-btn.wide {
+                padding: 10px 16px !important;
+                font-size: 16px !important;
+            }
+
+            .controls-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 10px;
+                align-items: center;
+            }
+
+            /* 第一行：左-旋转-右 */
+            #btn-left {
+                grid-column: 1 / 2;
+            }
+            #btn-rotate {
+                grid-column: 2 / 3;
+            }
+            #btn-right {
+                grid-column: 3 / 4;
+            }
+            /* 第二行：下移占满 */
+            #btn-down {
+                grid-column: 1 / 4;
+            }
+
+            .control-btn {
+                padding: 12px 16px;
+                font-size: 18px;
+                border-radius: 10px;
+                border: 1px solid #555;
+                background: #333;
+                color: #eee;
+                touch-action: manipulation;
+                user-select: none;
+                -webkit-user-select: none;
+                -webkit-touch-callout: none; /* 禁用长按弹出菜单 */
+            }
+
+            .control-btn.primary {
+                background: #444;
+                border-color: #888;
+            }
+
+            .control-btn.wide {
+                padding: 12px 20px;
+                font-size: 18px;
+            }
+        }
+        /* 移动端全局优化：取消点击高亮、禁用触控弹出 */
+        @media (hover: none) and (pointer: coarse) {
+            * { -webkit-tap-highlight-color: transparent; }
+            canvas { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
         }
     </style>
 </body>
